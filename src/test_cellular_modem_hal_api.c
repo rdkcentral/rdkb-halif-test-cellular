@@ -113,12 +113,12 @@ void test_l1_cellular_modem_hal_api_positive1_Modem_Reboot(void) {
 * **Test Procedure:** @n
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: |:--------------: | :-----: |
-* | 01 | Invoke Modem_Firmware_Version with valid buffer | buffer | STATUS_SUCCESS | Should be successful |
+* | 01 | Invoke Modem_Firmware_Version with valid buffer | buffer = valid value | STATUS_SUCCESS | Should be successful |
 */
 void test_l1_cellular_modem_hal_api_positive1_Modem_Firmware_Version(void) {
     UT_LOG("Entering test_l1_cellular_modem_hal_api_positive1_Modem_Firmware_Version...");
     UT_LOG("Invoking Modem_Firmware_Version with valid buffer...");
-    char buffer[128];
+    char buffer[128]={0};
     // Invoke Modem_Firmware_Version with valid buffer
     int result = Modem_Firmware_Version(&buffer);
     UT_LOG("Expected Result: STATUS_SUCCESS");

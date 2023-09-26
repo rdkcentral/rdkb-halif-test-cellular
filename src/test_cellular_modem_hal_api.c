@@ -78,9 +78,9 @@ void test_l1_cellular_modem_hal_api_positive1_Modem_FactoryReset(void) {
 * **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
 *
 * **Test Procedure:** @n
-* 	| Variation / Step | Description | Test Data | Expected Result | Notes |
-* 	| :----: | :---------: | :----------: | :--------------: | :-----: |
-* 	| 01 | Invoking Modem_Reboot with no input parameters |None| STATUS_SUCCESS | Should be successful |
+* | Variation / Step | Description | Test Data | Expected Result | Notes |
+* | :----: | :---------: | :----------: | :--------------: | :-----: |
+* | 01 | Invoking Modem_Reboot with no input parameters |None| STATUS_SUCCESS | Should be successful |
 */
 void test_l1_cellular_modem_hal_api_positive1_Modem_Reboot(void) {
     // Log entering the test function
@@ -113,7 +113,7 @@ void test_l1_cellular_modem_hal_api_positive1_Modem_Reboot(void) {
 * **Test Procedure:** @n
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: |:--------------: | :-----: |
-* | 01 | Invoke Modem_Firmware_Version with valid buffer | buffer = 'EM06ALAR04A01M4G_01.003.01.003' | STATUS_SUCCESS | Should be successful |
+* | 01 | Invoke Modem_Firmware_Version with valid buffer | buffer | STATUS_SUCCESS | Should be successful |
 */
 void test_l1_cellular_modem_hal_api_positive1_Modem_Firmware_Version(void) {
     UT_LOG("Entering test_l1_cellular_modem_hal_api_positive1_Modem_Firmware_Version...");
@@ -128,12 +128,12 @@ void test_l1_cellular_modem_hal_api_positive1_Modem_Firmware_Version(void) {
     if (strcmp(buffer,"EM06ALAR04A01M4G_01.003.01.003"))
     {
         UT_LOG("Modem_firmware version is returning successfully:%s",buffer);
-	    UT_PASS("Modem_firmware version is returning sucess\n");
+	UT_PASS("Modem_firmware version is returning sucess\n");
     }
     else
     {
         UT_LOG("Modem_firmware version is returning failure:%s",buffer);
-	    UT_PASS("Modem_firmware version is returning failure\n");
+	UT_PASS("Modem_firmware version is returning failure\n");
     }
     UT_LOG("Exiting test_l1_cellular_modem_hal_api_positive1_Modem_Firmware_Version...");
 }

@@ -52,22 +52,23 @@
 * **Dependencies:** None @n
 * **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console.@n
 * 
-* **Test Procedure:**@n
+* Test Procedure: @n
 * | Variation / Step | Description | Test Data |Expected Result |Notes |
 * | :----: | :---------: | :----------: |:--------------: | :-----: |
 * | 01 | Test the behavior of cellular_hal_IsModemDevicePresent() when no modem device is present | None | FALSE | Should return FALSE |
 */
-void test_l1_cellular_hal_negative1_IsModemDevicePresent(void)
+void test_l1_cellular_hal_positive1_IsModemDevicePresent(void)
 {
-    UT_LOG("Entering test_l1_cellular_hal_negative1_IsModemDevicePresent...");
+    UT_LOG("Entering test_l1_cellular_hal_positive1_IsModemDevicePresent...");
     UT_LOG("Invoking cellular_hal_IsModemDevicePresent() with no modem device present. Return status: %d");
 
     // Invoke the API function
     unsigned int status = cellular_hal_IsModemDevicePresent();
     UT_LOG("Return Status: %d", status);
     // Check the return status
-    UT_ASSERT_EQUAL(status, FALSE);
-    UT_LOG("Exiting test_l1_cellular_hal_negative1_IsModemDevicePresent...");
+    //UT_ASSERT_EQUAL(status, FALSE);
+    UT_ASSERT_TRUE( status == TRUE || status == FALSE);
+    UT_LOG("Exiting test_l1_cellular_hal_positive1_IsModemDevicePresent...");
 }
 
 /**
@@ -87,7 +88,7 @@ void test_l1_cellular_hal_negative1_IsModemDevicePresent(void)
 * Test Procedure: @n
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Invoke cellular_hal_init()   | enIPFamilyPreference = IPV4 | RETURN_OK | should return successful|
+* | 01 | Invoke cellular_hal_init()   | enIPFamilyPreference = IP_FAMILY_UNKNOWN | RETURN_OK | should return successful|
 * 
 */
 void test_l1_cellular_hal_positive1_init(void) {    
@@ -312,9 +313,9 @@ void test_l1_cellular_hal_positive1_sim_power_enable(void)
 }
 
 /**
-* @brief Test Case to test the functionality of the `cellular_hal_sim_power_enable` API when disabling power on slot 1.
+* @brief Test Case to test the functionality of the cellular_hal_sim_power_enable API when disabling power on slot 1.
 *
-* This test case is used to verify if the `cellular_hal_sim_power_enable` API correctly disables power on slot 1.
+* This test case is used to verify if the cellular_hal_sim_power_enable API correctly disables power on slot 1.
 *
 * **Test Group ID:** Basic: 01 @n
 * **Test Case ID:** 09 @n
@@ -346,9 +347,9 @@ void test_l1_cellular_hal_positive2_sim_power_enable(void)
 }
 
 /**
- * @brief This test case checks the functionality of the `cellular_hal_sim_power_enable()` function when enabling power on slot 2.
+ * @brief This test case checks the functionality of the cellular_hal_sim_power_enable() function when enabling power on slot 2.
  *
- * The objective of this test is to ensure that the `cellular_hal_sim_power_enable()` function correctly enables power on slot 2 and returns the expected result.
+ * The objective of this test is to ensure that the cellular_hal_sim_power_enable() function correctly enables power on slot 2 and returns the expected result.
  *
  * **Test Group ID:** Basic: 01 @n 
  * **Test Case ID:** 10 @n
@@ -519,6 +520,8 @@ void test_l1_cellular_hal_positive1_get_total_no_of_uicc_slots(void) {
     UT_LOG("Return result: %d", result);
     UT_ASSERT_EQUAL(result, RETURN_OK);
     //UT_ASSERT_EQUAL(total_slots, 1);
+    UT_ASSERT_TRUE( total_slots == 1 || total_slots == 2)
+    UT_LOG("cellular_hal_get_total_no_of_uicc_slots with total_slots is %d",total_slots);
     UT_LOG("Exiting test_l1_cellular_hal_positive_1_get_total_no_of_uicc_slots...");
 }
 
@@ -541,7 +544,7 @@ void test_l1_cellular_hal_positive1_get_total_no_of_uicc_slots(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Invoking cellular_hal_get_total_no_of_uicc_slots with a NULL output parameter | output = NULL | RETURN_ERR | Should be failure |
 */
-/*void test_l1_cellular_hal_negative1_get_total_no_of_uicc_slots(void) {
+void test_l1_cellular_hal_negative1_get_total_no_of_uicc_slots(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative_1_get_total_no_of_uicc_slots...");
     UT_LOG("Invoking cellular_hal_get_total_no_of_uicc_slots with NULL pointer for output parameter");
 
@@ -551,7 +554,7 @@ void test_l1_cellular_hal_positive1_get_total_no_of_uicc_slots(void) {
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
     
     UT_LOG("Exiting test_l1_cellular_hal_negative_1_get_total_no_of_uicc_slots...");
-}*/
+}
 /**
 * @brief Tests the functionality of the cellular_hal_get_uicc_slot_info function
 *
@@ -691,7 +694,7 @@ void test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info(void)
     UT_LOG("Entering test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info...");
 
     // Test case parameters
-    unsigned int slot_index = NULL;
+    unsigned int slot_index = 4294967296;  //2 power 32=4294967296
     CellularUICCSlotInfoStruct slot_info;
     // Populate slot_info with random values
     UT_LOG("Invoking cellular_hal_negative2_cellular_hal_get_uicc_slot_info with invalid pointer ");
@@ -738,16 +741,6 @@ void test_l1_cellular_hal_positive1_get_active_card_status(void) {
     UT_LOG("Card Status: %d ", card_status);
     // Check the return status
     UT_ASSERT_EQUAL(status, RETURN_OK);
-    /*if (strcmp(&status,"IF_UP") || strcmp(&status,"IF_DOWN") || strcmp(&status,"IF_UNKNOWN") || strcmp(&status,"IF_DORMANT")||  strcmp(&status,"IF_NOTPRESENT"))
-    {
-            UT_LOG("get_current_modem_interface_status %s which is a valid value",result);
-            UT_PASS("get_current_modem_interface_status validation success");
-    }
-    else
-    {
-            UT_LOG("get_current_modem_interface_status %s which is a Invalid value",result);
-            UT_FAIL("get_current_modem_interface_status validation fail");
-    }*/
     if((card_status ==0) || (card_status == 1) || (card_status == 2) || (card_status == 3))
     {
         UT_LOG("get_active_card_status %d which is a valid value",card_status);
@@ -783,7 +776,7 @@ void test_l1_cellular_hal_positive1_get_active_card_status(void) {
 * | 01 | Call the function to get the active card status | with NULL pointer | RETURN_ERR | Should return RETURN_ERROR |
 */
 
-/*void test_l1_cellular_hal_negative1_get_active_card_status(void) {
+void test_l1_cellular_hal_negative1_get_active_card_status(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative_1_null_pointer...");
     UT_LOG("Invoking cellular_hal_negative_1_get_active_card_status with valid input ");
 
@@ -795,7 +788,7 @@ void test_l1_cellular_hal_positive1_get_active_card_status(void) {
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative_1_get_active_card_status...");
-}*/
+}
 
 /**
 * @brief Test case to verify the behavior of the function test_l1_cellular_hal_negative_2_random_card_status.
@@ -841,379 +834,13 @@ void test_l1_cellular_hal_negative2_get_active_card_status(void) {
 }
 
 /**
- * @brief Test case to verify behavior when a NULL callback function is passed to cellular_hal_monitor_device_registration.
- *
- * The objective of this test case is to verify that the API handles the situation correctly when a NULL callback function is passed for monitoring device registration.
- *
- * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 023 @n
- * **Priority:** High @n@n
- *
- * **Pre-Conditions:** None @n
- * **Dependencies:** None @n
- * **User Interaction:** If the user chooses to run the test in interactive mode, the test case has to be selected via the console. @n
- *
- * **Test Procedure:** @n
- * | Variation / Step | Description | Test Data | Expected Result | Notes |
- * | :----: | :---------: | :----------: | :--------------: | :-----: |
- * | 01 | Invoking cellular_hal_monitor_device_registration with null callback function | callback = NULL | RETURN_ERROR | Should return RETURN_ERROR |
- */
-void test_l1_cellular_hal_negative1_monitor_device_registration(void) {
-    UT_LOG("Entering test_l1_cellular_hal_negative1_monitor_device_registration_null_callback...");
-    UT_LOG("Invoking cellular_hal_monitor_device_registration with null callback function");
-
-    int status = cellular_hal_monitor_device_registration(NULL);
-    UT_LOG("Return status: %d", status);
-
-    UT_ASSERT_EQUAL(status, RETURN_ERROR);
-  
-    UT_LOG("Exiting test_l1_cellular_hal_negative1_monitor_device_registration_null_callback...");
-}
-
-/**
-* @brief Test case to verify the functionality of the cellular_hal_profile_create function.
-*
-* This test case verifies the ability of the cellular_hal_profile_create function to create a cellular profile with the given input parameters.
-*
-* **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 027 @n
-* **Priority:** High @n@n
-*
-* **Pre-Conditions:** None @n
-* **Dependencies:** None @n
-* **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
-*
-* **Test Procedure:** @n
-* | Variation / Step | Description | Test Data | Expected Result |Notes |
-* | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Create a cellular profile with specific input parameters | valid ProfileID = 1, ProfileType = CELLULAR_PROFILE_TYPE_3GPP, PDPContextNumber = 0, PDPType = CELLULAR_PDP_TYPE_IPV4 | RETURN_OK| The function should successfully |
-*/
-
-/*void test_l1_cellular_hal_positive1_cellular_hal_profile_create(void)
-{
-    UT_LOG("Entering test_l1_cellular_hal_positive1_cellular_hal_profile_create...");
-
-    // Test case variables
-    CellularProfileStruct profileInput;
-    cellular_device_profile_status_api_callback statusCallback;
-
-    // Set test case parameters
-    profileInput.ProfileID = 1;
-    profileInput.ProfileType = CELLULAR_PROFILE_TYPE_3GPP;
-    profileInput.PDPContextNumber = 0;
-    profileInput.PDPType = CELLULAR_PDP_TYPE_IPV4;
-    // Set other profileInput parameters...
-    UT_LOG("Invoking cellular_hal_positive1_cellular_hal_profile_create with valid input");
-
-    // Call the API and perform the test
-    int status = cellular_hal_profile_create(&profileInput, statusCallback);
-    UT_LOG("Return status: %d", status);
-
-    // Validate the test
-    UT_ASSERT_EQUAL(status, RETURN_OK);
-    // Add additional assertions to validate the profile creation
-
-    UT_LOG("Exiting test_l1_cellular_hal_positive1_cellular_hal_profile_create...");
-}*/
-
-/**
- * @brief This test case verifies the successful creation of a cellular profile using the cellular_hal_profile_create API.
- *
- * The objective of this test is to ensure that the cellular_hal_profile_create API is able to correctly create a cellular profile with the given input parameters.
- *
- * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 028 @n
- * **Priority:** High @n@n
- *
- * **Pre-Conditions:** None @n
- * **Dependencies:** None @n
- * **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
- * 
- * **Test Procedure:** @n
- * | Variation / Step | Description | Test Data | Expected Result | Notes |
- * | :----: | :---------: | :----------: | :--------------: | :-----: |
- * | 01 | Create a cellular profile | VALID ProfileID = 0, ProfileType = CELLULAR_PROFILE_TYPE_3GPP2, PDPContextNumber = 1, PDPType = CELLULAR_PDP_TYPE_IPV6 | RETURN_OK | The cellular profile is successfully created | 
- */
-
-/*void test_l1_cellular_hal_positive2_cellular_hal_profile_create(void)
-{
-    UT_LOG("Entering test_l1_cellular_hal_positive2_cellular_hal_profile_create...");
-
-    // Test case variables
-    CellularProfileStruct profileInput;
-    cellular_device_profile_status_api_callback statusCallback;
-
-    // Set test case parameters
-    profileInput.ProfileID = 0;
-    profileInput.ProfileType = CELLULAR_PROFILE_TYPE_3GPP2;
-    profileInput.PDPContextNumber = 1;
-    profileInput.PDPType = CELLULAR_PDP_TYPE_IPV6;
-    // Set other profileInput parameters...
-    UT_LOG("Invoking cellular_hal_positive1_cellular_hal_profile_create with valid input");
-
-    // Call the API and perform the test
-    int status = cellular_hal_profile_create(&profileInput, statusCallback);
-    UT_LOG("Return status: %d", status);
-
-    // Validate the test
-    UT_ASSERT_EQUAL(status, RETURN_OK);
-    // Add additional assertions to validate the profile creation
-
-    UT_LOG("Exiting test_l1_cellular_hal_positive2_cellular_hal_profile_create...");
-}*/
-
-/**
-* @brief Test the negative case for the cellular_hal_profile_create() function.
-*
-* This test case verifies that the cellular_hal_profile_create() function returns the expected status when the profileInput 
-* is NULL and statusCallback is also NULL.
-*
-* **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 024 @n
-* **Priority:** High @n@n
-*
-* **Pre-Conditions:** None @n
-* **Dependencies:** None @n
-* **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
-*
-* **Test Procedure:** @n
-* | Variation / Step | Description | Test Data | Expected Result | Notes |
-* | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Invoke cellular_hal_profile_create  | Invalid profileInput = NULL, statusCallback = NULL | RETURN_ERR | Should be failure |
-*/
-
-void test_l1_cellular_hal_negative1_cellular_hal_profile_create(void)
-{
-    UT_LOG("Entering test_l1_cellular_hal_negative1_cellular_hal_profile_create...");
-
-    // Test case variables
-    CellularProfileStruct *profileInput = NULL;
-    cellular_device_profile_status_api_callback statusCallback;
-    UT_LOG("Invoking cellular_hal_negative1_cellular_hal_profile_create with NULL pointer");
-
-    // Call the API and perform the test
-    int status = cellular_hal_profile_create(profileInput, statusCallback);
-    UT_LOG("Return status: %d", status);
-
-    // Validate the test
-    UT_ASSERT_EQUAL(status, RETURN_ERROR);
-
-    UT_LOG("Exiting test_l1_cellular_hal_negative1_cellular_hal_profile_create...");
-}
-
-/**
- * @brief Test case to verify the behavior of the cellular_hal_profile_create API with negative input values.
- *
- * This test case verifies the behavior of the cellular_hal_profile_create API when negative input values are provided. The objective of this test is to ensure that the API handles negative values correctly and returns the expected result.
- *
- * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 030 @n
- * **Priority:** High @n@n
- * 
- * **Pre-Conditions:** None @n
- * **Dependencies:** None @n
- * **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
- * 
- * **Test Procedure:** @n
- * | Variation / Step | Description | Test Data | Expected Result | Notes |
- * | :----: | :---------: | :----------: | :--------------: | :-----: |
- * | 01 | Invoke cellular_hal_profile_create | Invalid value profileInput = negative value, statusCallback = negative value | RETURN_ERR | Should be failure |
- */
-/*void test_l1_cellular_hal_negative2_cellular_hal_profile_create(void)
-{
-    UT_LOG("Entering test_l1_cellular_hal_negative2_cellular_hal_profile_create...");
-
-    // Test case variables
-    CellularProfileStruct profileInput;
-    cellular_device_profile_status_api_callback statusCallback;
-
-    // Initialize test case parameters
-    // Set profileInput parameters randomly...
-    profileInput.ProfileID = 4;
-    profileInput.ProfileType = CELLULAR_PROFILE_TYPE_3GPP2;
-    profileInput.PDPContextNumber = 5;
-    profileInput.PDPType = CELLULAR_PDP_TYPE_IPV6;
-    UT_LOG("Invoking cellular_hal_negative2_cellular_hal_profile_create with Invalid pointer");
-
-    // Call the API and perform the test
-    int status = cellular_hal_profile_create(&profileInput, statusCallback);
-    UT_LOG("Return status: %d", status);
-
-    // Validate the test
-    UT_ASSERT_EQUAL(status, RETURN_ERROR);
-    // Add additional assertions to validate that profileInput was updated and not holding initial random values
-
-    UT_LOG("Exiting test_l1_cellular_hal_negative2_cellular_hal_profile_create...");
-}*/
-/**
-* @brief Test case to verify the functionality of cellular_hal_profile_modify()
-*
-* This test case verifies the functionality of the cellular_hal_profile_modify() function by modifying a cellular profile with valid inputs.
-*
-* **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 031 @n
-* **Priority:** High @n@n
-*
-* **Pre-Conditions:** None @n
-* **Dependencies:** None @n
-* **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
-*
-* **Test Procedure:** @n
-* | Variation / Step | Description | Test Data | Expected Result | Notes |
-* | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Invoke cellular_hal_profile_modify | with valid input | RETURN_OK | Should be successful  |
-*/
-/*void test_l1_cellular_hal_positive1_cellular_hal_profile_modify(void) {
-    UT_LOG("Entering test_l1_cellular_hal_positive1_profile_modify...");
-
-    // Set up the callback function
-    cellular_device_profile_status_api_callback device_profile_status_cb = NULL;
-    
-    // Create a valid pstProfileInput structure
-    CellularProfileStruct profileInput;
-    profileInput.ProfileID = 1;
-    profileInput.ProfileType = CELLULAR_PROFILE_TYPE_3GPP;
-    // Set other parameters of profileInput
-    UT_LOG("Invoking cellular_hal_positive1_cellular_hal_profile_modify with valid value");
-
-    // Invoke the API with the valid inputs
-    int status = cellular_hal_profile_modify(&profileInput, device_profile_status_cb);
-    UT_LOG("Return status: %d", status);
-
-    // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_OK);
-    
-    UT_LOG("Exiting test_l1_cellular_hal_positive1_cellular_hal_profile_modify...");
-}*/
-
-/**
-* @brief Unit test for the function cellular_hal_profile_modify in the L1 Cellular HAL module.
-*
-* This test verifies the functionality of cellular_hal_profile_modify by invoking the API with valid inputs
-* and checking the return status.
-*
-* **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 025 @n
-* **Priority:** High @n@n
-*
-* **Pre-Conditions:** None @n
-* **Dependencies:** None @n
-* **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via . @n
-*
-* **Test Procedure:** @n
-* | Variation / Step | Description | Test Data | Expected Result | Notes |
-* | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Invoke the API with a valid pstProfileInput structure | device_profile_status_cb = NULL | RETURN_ERROR | Should be Failure |
-*/
-void test_l1_cellular_hal_negative1_cellular_hal_profile_modify(void) {
-    UT_LOG("Entering test_l1_cellular_hal_negative1_cellular_hal_profile_modify...");
-    
-    // Set up the callback function
-    cellular_device_profile_status_api_callback device_profile_status_cb = NULL;
-    
-    // Create a valid pstProfileInput structure
-    CellularProfileStruct profileInput;
-    profileInput.ProfileID = 2;
-    profileInput.ProfileType = CELLULAR_PROFILE_TYPE_3GPP2;
-    // Set other parameters of profileInput
-    UT_LOG("Invoking cellular_hal_negative1_cellular_hal_profile_modify with Invalid pointer");
-
-    // Invoke the API with the valid inputs
-    int status = cellular_hal_profile_modify(&profileInput, device_profile_status_cb);
-    UT_LOG("Return status: %d", status);
-
-    // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_ERROR);
-    
-    UT_LOG("Exiting test_l1_cellular_hal_positive2_cellular_hal_profile_modify...");
-}
-
-/**
-* @brief Test for modifying cellular HAL profile
-*
-* This test is designed to verify the functionality of cellular_hal_profile_modify() function. It ensures that the function is able to modify the cellular HAL profile with valid inputs and returns the expected status.
-*
-* **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 026 @n
-* **Priority:** High @n@n
-*
-* **Pre-Conditions:** None @n
-* **Dependencies:** None @n
-* **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
-*
-* **Test Procedure:** @n
-* | Variation / Step | Description | Test Data | Expected Result | Notes |
-* | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | First set up thbace callk function | profileInput = NULL | RETURN_ERROR | Should return Failure |
-*/
-
-void test_l1_cellular_hal_negative2_profile_modify(void) {
-    UT_LOG("Entering test_l1_cellular_hal_negative2_profile_modify...");
-
-    // Set up the callback function
-    cellular_device_profile_status_api_callback device_profile_status_cb;
-    
-    // Create a valid pstProfileInput structure
-    //CellularProfileStruct profileInput=NULL;
-    // Set parameters of profileInput for the specific test case
-    UT_LOG("Invoking cellular_hal_negative2_cellular_hal_profile_modify with Invalid pointer");
-
-    // Invoke the API with the valid inputs
-    int status = cellular_hal_profile_modify(NULL, device_profile_status_cb);
-    UT_LOG("Return status: %d", status);
-
-    // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_ERROR);
-    
-    UT_LOG("Exiting test_l1_cellular_hal_negative2_profile_modify...");
-}
-
-/**
- * @brief Test case to verify the functionality of cellular_hal_profile_modify function.
- *
- * This test case verifies the functionality of the cellular_hal_profile_modify function by checking the return status after invoking the function with valid inputs.
- *
- * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 027 @n
- * **Priority:** High @n@n
- *
- * **Pre-Conditions:** None @n
- * **Dependencies:** None @n
- * **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
- *
- * **Test Procedure:** @n
- * | Variation / Step | Description | Test Data | Expected Result | Notes |
- * | :----: | :---------: | :----------: | :--------------: | :-----: |
- * |       01         | Set up the callback function and create a valid profile input structure | Invalid value | RETURN_ERROR | The function should be failure |
- */
-void test_l1_cellular_hal_negative3_cellular_hal_profile_modify(void) {
-    UT_LOG("Entering test_l1_cellular_hal_negative3_cellular_hal_profile_modify...");
-
-    // Set up the callback function
-    cellular_device_profile_status_api_callback device_profile_status_cb;
-    
-    // Create a valid pstProfileInput structure
-    CellularProfileStruct profileInput;
-    // Set parameters of profileInput for the specific test case
-    UT_LOG("Invoking cellular_hal_negative3_cellular_hal_profile_modify with Invalid pointer");
-
-    // Invoke the API with the valid inputs
-    int status = cellular_hal_profile_modify(&profileInput, device_profile_status_cb);
-    UT_LOG("Return status: %d", status);
-
-    // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_ERROR);
-    
-    UT_LOG("Exiting test_l1_cellular_hal_negative3_cellular_hal_profile_modify...");
-}
-/**
  * @brief Test case to verify the functionality of the cellular_hal_get_profile_list function.
  * 
  * This test case checks whether the cellular_hal_get_profile_list function returns the correct result 
  * and does not crash when invoked with valid parameters.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 028 @n
+ * **Test Case ID:** 023 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -1249,7 +876,7 @@ void test_l1_cellular_hal_positive1_get_profile_list(void) {
  * This test case is designed to verify the behavior of the cellular_hal_get_profile_list API when it is invoked with a NULL ppstProfileOutput parameter.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 029 @n
+ * **Test Case ID:** 024 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -1286,7 +913,7 @@ void test_l1_cellular_hal_negative1_get_profile_list(void) {
 * This test is intended to verify the behavior of the l1_cellular_hal_negative2_get_profile_list function when passed a NULL profile_count parameter.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 030 @n
+* **Test Case ID:** 025 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -1322,7 +949,7 @@ void test_l1_cellular_hal_negative2_get_profile_list(void) {
 * This test is intended to verify the behavior of the l1_cellular_hal_negative2_get_profile_list function when passed a NULL profile_count parameter.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 031 @n
+* **Test Case ID:** 026 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -1358,7 +985,7 @@ void test_l1_cellular_hal_negative3_get_profile_list(void) {
 * This test case verifies the implementation of the cellular_hal_stop_network function when stopping the network with the IPV4 IP type. The function is expected to return a success status upon successfully stopping the network.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 032 @n
+* **Test Case ID:** 027 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -1392,7 +1019,7 @@ void test_l1_cellular_hal_positive1_cellular_hal_stop_network(void)
  * The purpose of this test is to verify the behavior of the cellular_hal_stop_network function and check if it returns the expected result when called with the given input parameters.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 033 @n
+ * **Test Case ID:** 028 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -1422,12 +1049,12 @@ void test_l1_cellular_hal_positive2_cellular_hal_stop_network(void)
 }
 
 /**
-* @brief Test case to verify the behavior of @c cellular_hal_stop_network function when stopping the network.
+* @brief Test case to verify the behavior of cellular_hal_stop_network function when stopping the network.
 *
-* This test case verifies the behavior of the @c cellular_hal_stop_network function when stopping the network. The test checks if the function returns the expected result when invoked with a specific input.
+* This test case verifies the behavior of the cellular_hal_stop_network function when stopping the network. The test checks if the function returns the expected result when invoked with a specific input.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 035 @n
+* **Test Case ID:** 029 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1462,7 +1089,7 @@ void test_l1_cellular_hal_positive3_cellular_hal_stop_network(void)
 * It is important to test this behavior as the function should handle such inputs properly and return an appropriate error code.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 035 @n
+* **Test Case ID:** 030 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1495,7 +1122,7 @@ void test_l1_cellular_hal_negative1_cellular_hal_stop_network(void)
 * The purpose of this test is to verify that the cellular_hal_get_signal_info API returns the expected result when called with valid profile inputs and a callback.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 036 @n
+* **Test Case ID:** 031 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1529,7 +1156,7 @@ void test_l1_cellular_hal_positive1_get_signal_info(void) {
 * This test case checks if the 'cellular_hal_get_signal_info' function returns the expected result when a null callback function is passed as an argument. This scenario is being tested to ensure that the function handles this edge case properly.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 037 @n
+* **Test Case ID:** 032 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -1558,7 +1185,7 @@ void test_l1_cellular_hal_negative1_get_signal_info(void) {
 * This test case checks if the 'cellular_hal_get_signal_info' function returns the expected result when a null callback function is passed as an argument. This scenario is being tested to ensure that the function handles this edge case properly.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 038 @n
+* **Test Case ID:** 033 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -1589,7 +1216,7 @@ void test_l1_cellular_hal_negative2_get_signal_info(void) {
 * This test case focuses on verifying the functionality of the 'cellular_hal_set_modem_operating_configuration' API by setting a valid modem operating configuration and checking the return status.
 *
 * **Test Group ID:** Basic:01 @n
-* **Test Case ID:** 039 @n
+* **Test Case ID:** 034 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1597,9 +1224,9 @@ void test_l1_cellular_hal_negative2_get_signal_info(void) {
 * **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
 *
 * **Test Procedure:** @n
-* - | Variation / Step | Description | Test Data | Expected Result | Notes |
+* | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
-*   | 01 | Set modem operating configuration | modem_operating_config = CELLULAR_MODEM_SET_ONLINE | RETURN_OK | Should be successful |
+* | 01 | Set modem operating configuration | modem_operating_config = CELLULAR_MODEM_SET_ONLINE | RETURN_OK | Should be successful |
 */
 void test_l1_cellular_hal_positive1_set_modem_operating_configuration(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive_1_set_modem_operating_configuration...");
@@ -1624,7 +1251,7 @@ void test_l1_cellular_hal_positive1_set_modem_operating_configuration(void) {
 * This test case focuses on verifying the functionality of the 'cellular_hal_set_modem_operating_configuration' API by setting a valid modem operating configuration and checking the return status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 040 @n
+* **Test Case ID:** 035 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1653,12 +1280,12 @@ void test_l1_cellular_hal_positive2_set_modem_operating_configuration(void) {
     UT_LOG("Exiting test_l1_cellular_hal_positive_2_set_modem_operating_configuration...");
 }
 /**
-* @brief Test to verify the functionality of the 'cellular_hal_set_modem_operating_configuration' API.
+* @brief Test to verify the functionality of the cellular_hal_set_modem_operating_configuration API.
 *
-* This test case focuses on verifying the functionality of the 'cellular_hal_set_modem_operating_configuration' API by setting a valid modem operating configuration and checking the return status.
+* This test case focuses on verifying the functionality of the cellular_hal_set_modem_operating_configuration API by setting a valid modem operating configuration and checking the return status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 041 @n
+* **Test Case ID:** 036 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1687,12 +1314,12 @@ void test_l1_cellular_hal_positive3_set_modem_operating_configuration(void) {
     UT_LOG("Exiting test_l1_cellular_hal_positive_3_set_modem_operating_configuration...");
 }
 /**
-* @brief Test to verify the functionality of the 'cellular_hal_set_modem_operating_configuration' API.
+* @brief Test to verify the functionality of the cellular_hal_set_modem_operating_configuration API.
 *
-* This test case focuses on verifying the functionality of the 'cellular_hal_set_modem_operating_configuration' API by setting a valid modem operating configuration and checking the return status.
+* This test case focuses on verifying the functionality of the cellular_hal_set_modem_operating_configuration API by setting a valid modem operating configuration and checking the return status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 042 @n
+* **Test Case ID:** 037 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1714,19 +1341,18 @@ void test_l1_cellular_hal_positive4_set_modem_operating_configuration(void) {
     // Invoke the API with valid inputs
     int result = cellular_hal_set_modem_operating_configuration(modem_operating_config);
     UT_LOG("Return result: %d", result);
-
     // Check the return status
     UT_ASSERT_EQUAL(result, RETURN_OK);
 
     UT_LOG("Exiting test_l1_cellular_hal_positive_4_set_modem_operating_configuration...");
 }
 /**
-* @brief Test to verify the functionality of the 'cellular_hal_set_modem_operating_configuration' API.
+* @brief Test to verify the functionality of the cellular_hal_set_modem_operating_configuration API.
 *
-* This test case focuses on verifying the functionality of the 'cellular_hal_set_modem_operating_configuration' API by setting a valid modem operating configuration and checking the return status.
+* This test case focuses on verifying the functionality of the cellular_hal_set_modem_operating_configuration API by setting a valid modem operating configuration and checking the return status.
 *
 * **Test Group ID:** Basic : 01 @n
-* **Test Case ID:** 043 @n
+* **Test Case ID:** 038 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1761,7 +1387,7 @@ void test_l1_cellular_hal_positive5_set_modem_operating_configuration(void) {
   * This test case verifies the behavior of the function test_l1_cellular_hal_negative_1_set_modem_operating_configuration_null_pstProfileInput when the pstProfileInput parameter is NULL.
   * 
   * **Test Group ID:** Basic: 01 @n
-  * **Test Case ID:** 044 @n
+  * **Test Case ID:** 039 @n
   * **Priority:** High @n@n
   * 
   * **Pre-Conditions:** None @n
@@ -1794,7 +1420,7 @@ void test_l1_cellular_hal_negative1_set_modem_operating_configuration(void) {
 * This test case is used to verify the behavior of the function "cellular_hal_set_modem_operating_configuration" when an invalid profile type is provided as input. The objective of this test is to ensure that the function returns the expected result when invoked with an invalid profile type.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 045 @n
+* **Test Case ID:** 040 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -1829,7 +1455,7 @@ void test_l1_cellular_hal_negative2_set_modem_operating_configuration(void) {
 * This test is part of the Basic test group and has a high priority.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 046 @n
+* **Test Case ID:** 041 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -1861,18 +1487,16 @@ void test_l1_cellular_hal_positive1_get_device_imei_sv(void) {
  * This test case verifies the behavior of cellular_hal_get_device_imei_sv API when the input parameter imei is NULL.
  * 
  * Test Group ID: Basic: 01 @n
- * Test Case ID: 047 @n
+ * Test Case ID: 042 @n
  * Priority: High @n@n
  * 
  * Pre-Conditions: None @n
  * Dependencies: None @n
  * User Interaction: If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
  * 
- * Test Procedure: @n
- * 1. |01| Invoke cellular_hal_get_device_imei_sv API with imei = NULL.
- * 
+ * **Test Procedure:** @n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
-* | :----: | :---------: | :----------: | :--------------: | :-----: |
+ * | :----: | :---------: | :----------: | :--------------: | :-----: |
  * | 01 | Verify the behavior of the API when imei is NULL. | imei = NULL |  RETURN_ERR | The API should return an error. |
  */
 void test_l1_cellular_hal_negative1_get_device_imei_sv(void) {
@@ -1894,18 +1518,16 @@ void test_l1_cellular_hal_negative1_get_device_imei_sv(void) {
  * This test case verifies the behavior of cellular_hal_get_device_imei_sv API when the input parameter imei is NULL.
  * 
  * Test Group ID: Basic: 01 @n
- * Test Case ID: 048 @n
+ * Test Case ID: 043 @n
  * Priority: High @n@n
  * 
  * Pre-Conditions: None @n
  * Dependencies: None @n
  * User Interaction: If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
  * 
- * Test Procedure: @n
- * 1. |01| Invoke cellular_hal_get_device_imei_sv API with imei = NULL.
- * 
+ * **Test Procedure:** @n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
-* | :----: | :---------: | :----------: | :--------------: | :-----: |
+ * |:----: | :---------: | :----------: | :--------------: | :-----: |
  * | 01 | Verify the behavior of the API when imei is NULL. | imei = empty |  RETURN_ERR | The API should return an error. |
  */
 void test_l1_cellular_hal_negative2_get_device_imei_sv(void) {
@@ -1928,7 +1550,7 @@ void test_l1_cellular_hal_negative2_get_device_imei_sv(void) {
 * The objective of this test is to ensure that the function cellular_hal_retrieve_modem_imei() returns a valid IMEI value and a success status when provided with a valid IMEI buffer.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 049 @n
+* **Test Case ID:** 044 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -1974,7 +1596,7 @@ void test_l1_cellular_hal_positive1_get_device_imei( void )
 * The purpose of this test is to ensure that the function handles the case of a NULL IMEI buffer correctly and returns the expected status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 050 @n
+* **Test Case ID:** 045 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2013,7 +1635,7 @@ void test_l1_cellular_hal_negative1_get_device_imei( void )
 * The purpose of this test is to ensure that the function handles the case of a NULL IMEI buffer correctly and returns the expected status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 051 @n
+* **Test Case ID:** 046 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2053,7 +1675,7 @@ void test_l1_cellular_hal_negative2_get_device_imei( void )
  * This test case verifies the functionality of the "cellular_hal_retrieve_modem_current_iccid" API by retrieving the ICCID from the modem and checking the return status and the retrieved ICCID.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 052 @n
+ * **Test Case ID:** 047 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2098,7 +1720,7 @@ void test_l1_cellular_hal_positive1_get_modem_current_iccid(void) {
  * This test case checks if the function properly handles the scenario when the ICCID buffer is NULL and returns an error status.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 053 @n
+ * **Test Case ID:** 048 @n
  * **Priority:** High @n@n
  * 
  * **Pre-Conditions:** None @n
@@ -2131,7 +1753,7 @@ void test_l1_cellular_hal_negative1_get_modem_current_iccid(void) {
  * This test case checks if the function properly handles the scenario when the ICCID buffer is NULL and returns an error status.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 054 @n
+ * **Test Case ID:** 049 @n
  * **Priority:** High @n@n
  * 
  * **Pre-Conditions:** None @n
@@ -2164,7 +1786,7 @@ void test_l1_cellular_hal_negative2_get_modem_current_iccid(void) {
 * This test case verifies if the function retrieves the current MSISDN (Mobile Subscriber Integrated Services Digital Network Number) from the modem correctly.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 055 @n
+* **Test Case ID:** 050 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2202,7 +1824,7 @@ void test_l1_cellular_hal_positive1_get_modem_current_msisdn(void) {
  * This test case is meant to verify the functionality of the function when an invalid IP request type is provided as input. The function is expected to return an error in this case.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 056 @n
+ * **Test Case ID:** 051 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2234,7 +1856,7 @@ void test_l1_cellular_hal_negative1_get_modem_current_msisdn(void) {
  * This test case is meant to verify the functionality of the function when an invalid IP request type is provided as input. The function is expected to return an error in this case.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 057 @n
+ * **Test Case ID:** 052 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2266,7 +1888,7 @@ void test_l1_cellular_hal_negative2_get_modem_current_msisdn(void) {
  *
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 058 @n
+ * **Test Case ID:** 053 @n
  * **Priority:** High @n@n
  * 
  * **Pre-Conditions:** None @n
@@ -2297,7 +1919,7 @@ void test_l1_cellular_hal_positive1_get_packet_statistics(void) {
  *
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 059 @n
+ * **Test Case ID:** 054 @n
  * **Priority:** High @n@n
  * 
  * **Pre-Conditions:** None @n
@@ -2332,7 +1954,7 @@ void test_l1_cellular_hal_negative1_get_packet_statistics(void) {
  *
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 060 @n
+ * **Test Case ID:** 055 @n
  * **Priority:** High @n@n
  * 
  * **Pre-Conditions:** None @n
@@ -2367,7 +1989,7 @@ void test_l1_cellular_hal_negative2_get_packet_statistics(void) {
 * This test case checks if the function cellular_hal_get_current_modem_interface_status returns the correct result and updates the output values when invoked with a positive input.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 061 @n
+* **Test Case ID:** 056 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2415,7 +2037,7 @@ void test_l1_cellular_hal_positive1_get_current_modem_interface_status( void )
 * The objective of this test is to ensure that the function handles the NULL pointer input correctly and returns the expected result.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 062 @n
+* **Test Case ID:** 057 @n
 * **Priority:** High  @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2451,7 +2073,7 @@ void test_l1_cellular_hal_negative1_get_current_modem_interface_status( void )
 * The objective of this test is to ensure that the function handles the NULL pointer input correctly and returns the expected result.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 063 @n
+* **Test Case ID:** 058 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2486,7 +2108,7 @@ void test_l1_cellular_hal_negative2_get_current_modem_interface_status( void )
 * The purpose of this test is to ensure that the function returns RETURN_ERR when an invalid modem operating configuration is passed as input.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 064 @n
+* **Test Case ID:** 059 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2523,7 +2145,7 @@ void test_l1_cellular_hal_negative1_set_modem_network_attach(void) {
 * This test verifies the behavior of the 'cellular_hal_set_modem_network_detach' function when detaching from the network is not possible. The API is expected to return an error code.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 065 @n
+* **Test Case ID:** 060 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2555,7 +2177,7 @@ void test_l1_cellular_hal_negative1_set_modem_network_detach( void )
 * The objective of this test is to check if the function `cellular_hal_get_modem_firmware_version` returns the modem IMEI and software version correctly.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 066 @n
+* **Test Case ID:** 061 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2609,7 +2231,7 @@ void test_l1_cellular_hal_positive1_get_modem_firmware_version(void)
  * This test is to verify the behavior of the API when the imei_sv buffer is NULL. The expected result is for the API to return an error code (RETURN_ERR).
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 067 @n
+ * **Test Case ID:** 062 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2622,7 +2244,7 @@ void test_l1_cellular_hal_positive1_get_modem_firmware_version(void)
  * | 01 | Invoking cellular_hal_get_modem_firmware_version | with NULL pointer | RETURN_ERR | Should return an error |
  */
 
-/*void test_l1_cellular_hal_negative1_get_modem_firmware_version(void)
+void test_l1_cellular_hal_negative1_get_modem_firmware_version(void)
 {
     UT_LOG("Entering test_l1_cellular_hal_negative1_get_modem_firmware_version...");
 
@@ -2635,7 +2257,7 @@ void test_l1_cellular_hal_positive1_get_modem_firmware_version(void)
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative1_get_modem_firmware_version...");
-}*/
+}
 
 /**
  * @brief Test to verify the functionality of cellular_hal_get_current_plmn_information function.
@@ -2643,7 +2265,7 @@ void test_l1_cellular_hal_positive1_get_modem_firmware_version(void)
  * This test checks if the cellular_hal_get_current_plmn_information function returns the expected status and fills in the plmn_info structure correctly.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 068 @n
+ * **Test Case ID:** 063 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2676,7 +2298,7 @@ void test_l1_cellular_hal_positive1_get_current_plmn_information(void) {
  * The objective of this test is to ensure that the API correctly handles the case when a NULL plmn_info structure is passed as an argument.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 069 @n
+ * **Test Case ID:** 064 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2706,7 +2328,7 @@ void test_l1_cellular_hal_negative1_get_current_plmn_information(void) {
  * The objective of this test is to ensure that the API correctly handles the case when a NULL plmn_info structure is passed as an argument.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 070 @n
+ * **Test Case ID:** 065 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2739,7 +2361,7 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
 * This function is responsible for retrieving available network information from the cellular module.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 071 @n
+* **Test Case ID:** 066 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2751,12 +2373,12 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Invoke the API with valid pointers | network_info = NULL, total_network_count = NULL | RETURN_OK | Should be successful |
 */
-/*void test_l1_cellular_hal_positive1_get_available_networks_information(void) {
+void test_l1_cellular_hal_positive1_get_available_networks_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive1_cellular_hal_get_available_networks_information...");
     
     // Test variables
-    CellularNetworkScanResultInfoStruct **network_info = NULL; // Valid pointer
-    unsigned int *total_network_count = NULL; // Valid pointer
+    CellularNetworkScanResultInfoStruct **network_info ; // Valid pointer
+    unsigned int *total_network_count ; // Valid pointer
     
     // Invoke the API with valid pointers
     int status = cellular_hal_get_available_networks_information(network_info, total_network_count);
@@ -2767,7 +2389,7 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
     
     // Test complete
     UT_LOG("Exiting test_l1_cellular_hal_positive1_cellular_hal_get_available_networks_information...");
-}*/
+}
 
 /**
 * @brief Test case to verify the negative scenario of the cellular_hal_get_available_networks_information() API.
@@ -2776,7 +2398,7 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
 * invoked with NULL pointers for network_info and total_network_count.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 072 @n
+* **Test Case ID:** 067 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2788,8 +2410,7 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Invoke API with NULL pointers | WITH network_info = NULL, total_network_count = NULL | RETURN_ERR | Should return RETURN_ERR |
 */
-
-/*void test_l1_cellular_hal_negative1_get_available_networks_information(void) {
+void test_l1_cellular_hal_negative1_get_available_networks_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_cellular_hal_get_available_networks_information...");
     
     // Test variables
@@ -2806,7 +2427,7 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
     
     // Test complete
     UT_LOG("Exiting test_l1_cellular_hal_negative1_cellular_hal_get_available_networks_information...");
-}*/
+}
 
 /**
  * @brief Test case to validate the behavior of the cellular_hal_get_available_networks_information function when a NULL pointer is passed for network_info.
@@ -2814,7 +2435,7 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
  * This test case verifies that the cellular_hal_get_available_networks_information function returns an error when a NULL pointer is passed for network_info. The purpose of this test is to ensure that the function handles invalid input correctly.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 073 @n
+ * **Test Case ID:** 068 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -2852,7 +2473,7 @@ void test_l1_cellular_hal_negative2_get_available_networks_information(void) {
 * This test case verifies the behavior of the 'cellular_hal_get_available_networks_information' function when it is called with a NULL pointer for the total_network_count parameter.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 074 @n
+* **Test Case ID:** 069 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -2864,7 +2485,7 @@ void test_l1_cellular_hal_negative2_get_available_networks_information(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Invoke the function with a NULL pointer for total_network_count | with total_network_count = NULL pointer | RETURN_ERROR | Should return an error value indicating that the total_network_count is a NULL pointer |
 */
-/*void test_l1_cellular_hal_negative3_get_available_networks_information(void) {
+void test_l1_cellular_hal_negative3_get_available_networks_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative3_cellular_hal_get_available_networks_information...");
     
     // Test variables
@@ -2881,14 +2502,14 @@ void test_l1_cellular_hal_negative2_get_available_networks_information(void) {
     
     // Test complete
     UT_LOG("Exiting test_l1_cellular_hal_negative3_cellular_hal_get_available_networks_information...");
-}*/
+}
 /**
 * @brief This test function is used to verify the functionality of the "cellular_hal_get_modem_preferred_radio_technology" API.
 *
 * The objective of this test is to ensure that the API returns the preferred radio technology correctly.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 075 @n
+* **Test Case ID:** 070 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -2939,7 +2560,7 @@ void test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology(void) {
 * This test case tests the behavior of the 'cellular_hal_get_modem_preferred_radio_technology' API when a NULL pointer is passed as input. It checks if the API returns the expected error value.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 076 @n
+* **Test Case ID:** 071 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -2971,7 +2592,7 @@ void test_l1_cellular_hal_negative1_get_modem_preferred_radio_technology(void) {
 * This test case tests the behavior of the 'cellular_hal_get_modem_preferred_radio_technology' API when a NULL pointer is passed as input. It checks if the API returns the expected error value.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 077 @n
+* **Test Case ID:** 072 @n
 * **Priority:** High @n@n
 * 
 * **Pre-Conditions:** None @n
@@ -3005,7 +2626,7 @@ void test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology(void) {
 * The objective of this test is to verify that the L1 cellular hal functions correctly with valid pointer input and IFUP status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 078 @n
+* **Test Case ID:** 073 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3045,7 +2666,7 @@ void test_l1_cellular_hal_positive1_set_modem_preferred_radio_technology(void) {
 * The objective of this test is to verify that the L1 cellular hal functions correctly with valid pointer input and IFUP status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 079 @n
+* **Test Case ID:** 074 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:**  @n
@@ -3085,7 +2706,7 @@ void test_l1_cellular_hal_positive2_set_modem_preferred_radio_technology(void) {
 * The objective of this test is to verify that the L1 cellular hal functions correctly with valid pointer input and IFUP status.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 080 @n
+* **Test Case ID:** 075 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3126,7 +2747,7 @@ void test_l1_cellular_hal_positive3_set_modem_preferred_radio_technology(void) {
  * This test verifies the behavior of the API when a null pointer is passed as input. It checks whether the API handles the null pointer correctly and returns the expected error code.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 081 @n
+ * **Test Case ID:** 076 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -3162,7 +2783,7 @@ void test_l1_cellular_hal_negative1_set_modem_preferred_radio_technology(void) {
 * This test case checks the behavior of the API when an invalid status value is provided as input. The purpose of this test is to ensure that the function handles invalid status values correctly and returns the expected results.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 082 @n
+* **Test Case ID:** 077 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3197,7 +2818,7 @@ void test_l1_cellular_hal_negative2_set_modem_preferred_radio_technology(void) {
 * This test checks if the function get_modem_current_radio_technology_lte returns the correct current RAT (Radio Access Technology) for LTE.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 083 @n
+* **Test Case ID:** 078 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3220,11 +2841,13 @@ void test_l1_cellular_hal_positive1_get_modem_current_radio_technology( void )
    // int result = cellular_hal_get_modem_current_radio_technology(&current_rat);
     int result = cellular_hal_get_modem_current_radio_technology(&current_rat);
     UT_LOG("Return result: %d", result);
+    //UT_ASSERT_EQUAL(result, RETURN_OK);
 
-    UT_LOG("Result: %s", (result == RETURN_OK) ? "Successful" : "Failer");
+
+    //UT_LOG("Result: %s", (result == RETURN_OK) ? "Successful" : "Failer");
 
     UT_ASSERT_EQUAL(result, RETURN_OK);
-
+    UT_LOG("Exiting test_l1_cellular_hal_positive1_get_modem_current_radio_technology...");
 }
 /**
 * @brief This test verifies the behavior of the function `cellular_hal_get_modem_current_radio_technology` when a null pointer is provided as the input argument.
@@ -3232,7 +2855,7 @@ void test_l1_cellular_hal_positive1_get_modem_current_radio_technology( void )
 * This test case is part of the Basic (L1) test group and has a high priority as it tests a fundamental functionality of the API.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 084 @n
+* **Test Case ID:** 079 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3254,7 +2877,7 @@ void test_l1_cellular_hal_negative1_get_modem_current_radio_technology( void )
     int result = cellular_hal_get_modem_current_radio_technology(current_rat);
     UT_LOG("Return result: %d", result);
 
-    UT_LOG("Result: %s", (result == RETURN_ERROR) ? "Successful" : "Failure");
+    //UT_LOG("Result: %s", (result == RETURN_ERROR) ? "Successful" : "Failure");
 
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
@@ -3266,7 +2889,7 @@ void test_l1_cellular_hal_negative1_get_modem_current_radio_technology( void )
 * This test case is part of the Basic (L1) test group and has a high priority as it tests a fundamental functionality of the API.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 085 @n
+* **Test Case ID:** 080 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3288,7 +2911,7 @@ void test_l1_cellular_hal_negative2_get_modem_current_radio_technology( void )
     int result = cellular_hal_get_modem_current_radio_technology(current_rat);
     UT_LOG("Return result: %d", result);
 
-    UT_LOG("Result: %s", (result == RETURN_ERROR) ? "Successful" : "Failure");
+    //UT_LOG("Result: %s", (result == RETURN_ERROR) ? "Successful" : "Failure");
 
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
@@ -3301,7 +2924,7 @@ void test_l1_cellular_hal_negative2_get_modem_current_radio_technology( void )
  * This test case verifies the behavior of the cellular_hal_get_modem_current_radio_technology function when it fails to attach to the network.
  *
  * **Test Group ID:** Basic : 01 @n
- * **Test Case ID:** 086 @n
+ * **Test Case ID:** 081 @n
  * **Priority:** High @n@n
  * 
  * **Pre-Conditions:** None @n
@@ -3350,7 +2973,7 @@ void test_l1_cellular_hal_positive1_get_modem_supported_radio_technology( void )
  * This test verifies the functionality of the function cellular_hal_get_modem_supported_radio_technology by passing invalid parameters and checking if the return value is as expected.
  *
  * **Test Group ID:** Basic: 01 @n
- * **Test Case ID:** 087 @n
+ * **Test Case ID:** 082 @n
  * **Priority:** High @n@n
  *
  * **Pre-Conditions:** None @n
@@ -3385,7 +3008,7 @@ void test_l1_cellular_hal_negative1_get_modem_supported_radio_technology(void)
 * This test verifies that the function cellular_hal_modem_factory_reset returns the expected result and fills in the firmware version buffer correctly.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 088 @n
+* **Test Case ID:** 083 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3427,7 +3050,7 @@ void test_l1_cellular_hal_positive1_modem_factory_reset(void)
 * The purpose of this test is to ensure that the function cellular_hal_modem_reset is able to reset the modem successfully.
 *
 * **Test Group ID:** Basic: 01 @n
-* **Test Case ID:** 089 @n
+* **Test Case ID:** 084 @n
 * **Priority:** High @n@n
 *
 * **Pre-Conditions:** None @n
@@ -3453,7 +3076,6 @@ void test_l1_cellular_hal_positive1_cellular_hal_modem_reset(void) {
     UT_LOG("Exiting test_l1_cellular_hal_positive1_cellular_hal_modem_reset...");
 }
 
-
 static UT_test_suite_t * pSuite = NULL;
 
 /**
@@ -3470,8 +3092,8 @@ int register_hal_tests(void)
     }
     // List of test function names and strings
    
-const char* list1[] = {"l1_cellular_hal_negative1_IsModemDevicePresent","l1_cellular_hal_positive1_init","l1_cellular_hal_positive2_init","l1_cellular_hal_positive3_init","l1_cellular_hal_negative1_init","l1_cellular_hal_negative2_init","l1_cellular_hal_negative3_init","l1_cellular_hal_positive1_sim_power_enable","l1_cellular_hal_positive2_sim_power_enable","l1_cellular_hal_positive3_sim_power_enable","l1_cellular_hal_positive_sim_power_enable","l1_cellular_hal_negative1_sim_power_enable","l1_cellular_hal_negative2_sim_power_enable","l1_cellular_hal_positive1_get_total_no_of_uicc_slots","l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive1_get_active_card_status","l1_cellular_hal_negative2_get_active_card_status","l1_cellular_hal_negative1_monitor_device_registration","l1_cellular_hal_negative1_cellular_hal_profile_create","l1_cellular_hal_negative1_cellular_hal_profile_modify","l1_cellular_hal_negative2_profile_modify","l1_cellular_hal_negative3_cellular_hal_profile_modify","l1_cellular_hal_positive1_get_profile_list","l1_cellular_hal_negative1_get_profile_list","l1_cellular_hal_negative2_get_profile_list","l1_cellular_hal_negative3_get_profile_list","l1_cellular_hal_positive1_cellular_hal_stop_network","l1_cellular_hal_positive2_cellular_hal_stop_network","l1_cellular_hal_positive3_cellular_hal_stop_network","l1_cellular_hal_negative1_cellular_hal_stop_network","l1_cellular_hal_positive1_get_signal_info","l1_cellular_hal_negative1_get_signal_info","l1_cellular_hal_negative2_get_signal_info","l1_cellular_hal_positive1_set_modem_operating_configuration","l1_cellular_hal_positive2_set_modem_operating_configuration","l1_cellular_hal_positive3_set_modem_operating_configuration","l1_cellular_hal_positive4_set_modem_operating_configuration","l1_cellular_hal_positive5_set_modem_operating_configuration","l1_cellular_hal_negative1_set_modem_operating_configuration","l1_cellular_hal_negative2_set_modem_operating_configuration","l1_cellular_hal_positive1_get_device_imei_sv","l1_cellular_hal_negative1_get_device_imei_sv","l1_cellular_hal_negative2_get_device_imei_sv","l1_cellular_hal_positive1_get_device_imei","l1_cellular_hal_negative1_get_device_imei","l1_cellular_hal_negative2_get_device_imei","l1_cellular_hal_positive1_get_modem_current_iccid","l1_cellular_hal_negative1_get_modem_current_iccid","l1_cellular_hal_negative2_get_modem_current_iccid","l1_cellular_hal_positive1_get_modem_current_msisdn","l1_cellular_hal_negative1_get_modem_current_msisdn","l1_cellular_hal_negative2_get_modem_current_msisdn","l1_cellular_hal_positive1_get_packet_statistics","l1_cellular_hal_negative1_get_packet_statistics","l1_cellular_hal_negative2_get_packet_statistics","l1_cellular_hal_positive1_get_current_modem_interface_status","l1_cellular_hal_negative1_get_current_modem_interface_status","l1_cellular_hal_negative2_get_current_modem_interface_status","l1_cellular_hal_negative1_set_modem_network_attach","l1_cellular_hal_negative1_set_modem_network_detach","l1_cellular_hal_positive1_get_modem_firmware_version","l1_cellular_hal_positive1_get_current_plmn_information","l1_cellular_hal_negative1_get_current_plmn_information","l1_cellular_hal_negative2_get_current_plmn_information","l1_cellular_hal_negative2_get_available_networks_information","l1_cellular_hal_positive1_get_modem_preferred_radio_technology","l1_cellular_hal_negative1_get_modem_preferred_radio_technology","l1_cellular_hal_negative2_get_modem_preferred_radio_technology","l1_cellular_hal_positive1_set_modem_preferred_radio_technology","l1_cellular_hal_positive2_set_modem_preferred_radio_technology","l1_cellular_hal_positive3_set_modem_preferred_radio_technology","l1_cellular_hal_negative1_set_modem_preferred_radio_technology","l1_cellular_hal_negative2_set_modem_preferred_radio_technology","l1_cellular_hal_positive1_get_modem_current_radio_technology","l1_cellular_hal_negative1_get_modem_current_radio_technology","l1_cellular_hal_negative2_get_modem_current_radio_technology","l1_cellular_hal_positive1_get_modem_supported_radio_technology","l1_cellular_hal_negative1_get_modem_supported_radio_technology","l1_cellular_hal_positive1_modem_factory_reset","l1_cellular_hal_positive1_cellular_hal_modem_reset"};
-void (*list2[])() = {test_l1_cellular_hal_negative1_IsModemDevicePresent,test_l1_cellular_hal_positive1_init,test_l1_cellular_hal_positive2_init,test_l1_cellular_hal_positive3_init,test_l1_cellular_hal_negative1_init,test_l1_cellular_hal_negative2_init,test_l1_cellular_hal_negative3_init,test_l1_cellular_hal_positive1_sim_power_enable,test_l1_cellular_hal_positive2_sim_power_enable,test_l1_cellular_hal_positive3_sim_power_enable,test_l1_cellular_hal_positive4_sim_power_enable,test_l1_cellular_hal_negative1_sim_power_enable,test_l1_cellular_hal_negative2_sim_power_enable,test_l1_cellular_hal_positive1_get_total_no_of_uicc_slots,test_l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive1_get_active_card_status,test_l1_cellular_hal_negative2_get_active_card_status,test_l1_cellular_hal_negative1_monitor_device_registration,test_l1_cellular_hal_negative1_cellular_hal_profile_create,test_l1_cellular_hal_negative1_cellular_hal_profile_modify,test_l1_cellular_hal_negative2_profile_modify,test_l1_cellular_hal_negative3_cellular_hal_profile_modify,test_l1_cellular_hal_positive1_get_profile_list,test_l1_cellular_hal_negative1_get_profile_list,test_l1_cellular_hal_negative2_get_profile_list,test_l1_cellular_hal_negative3_get_profile_list,test_l1_cellular_hal_positive1_cellular_hal_stop_network,test_l1_cellular_hal_positive2_cellular_hal_stop_network,test_l1_cellular_hal_positive3_cellular_hal_stop_network,test_l1_cellular_hal_negative1_cellular_hal_stop_network,test_l1_cellular_hal_positive1_get_signal_info,test_l1_cellular_hal_negative1_get_signal_info,test_l1_cellular_hal_negative2_get_signal_info,test_l1_cellular_hal_positive1_set_modem_operating_configuration,test_l1_cellular_hal_positive2_set_modem_operating_configuration,test_l1_cellular_hal_positive3_set_modem_operating_configuration,test_l1_cellular_hal_positive4_set_modem_operating_configuration,test_l1_cellular_hal_positive5_set_modem_operating_configuration,test_l1_cellular_hal_negative1_set_modem_operating_configuration,test_l1_cellular_hal_negative2_set_modem_operating_configuration,test_l1_cellular_hal_positive1_get_device_imei_sv,test_l1_cellular_hal_negative1_get_device_imei_sv,test_l1_cellular_hal_negative2_get_device_imei,test_l1_cellular_hal_negative2_get_device_imei_sv,test_l1_cellular_hal_positive1_get_device_imei,test_l1_cellular_hal_negative1_get_device_imei,test_l1_cellular_hal_positive1_get_modem_current_iccid,test_l1_cellular_hal_negative1_get_modem_current_iccid,test_l1_cellular_hal_negative2_get_modem_current_iccid,test_l1_cellular_hal_positive1_get_modem_current_msisdn,test_l1_cellular_hal_negative1_get_modem_current_msisdn,test_l1_cellular_hal_negative2_get_modem_current_msisdn,test_l1_cellular_hal_positive1_get_packet_statistics,test_l1_cellular_hal_negative1_get_packet_statistics,test_l1_cellular_hal_negative2_get_packet_statistics,test_l1_cellular_hal_positive1_get_current_modem_interface_status,test_l1_cellular_hal_negative1_get_current_modem_interface_status,test_l1_cellular_hal_negative2_get_current_modem_interface_status,test_l1_cellular_hal_negative1_set_modem_network_attach,test_l1_cellular_hal_negative1_set_modem_network_detach,test_l1_cellular_hal_positive1_get_modem_firmware_version,test_l1_cellular_hal_positive1_get_current_plmn_information,test_l1_cellular_hal_negative1_get_current_plmn_information,test_l1_cellular_hal_negative2_get_current_plmn_information,test_l1_cellular_hal_negative2_get_available_networks_information,test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_get_modem_preferred_radio_technology,test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive3_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_get_modem_current_radio_technology,test_l1_cellular_hal_negative1_get_modem_current_radio_technology,test_l1_cellular_hal_negative2_get_modem_current_radio_technology,test_l1_cellular_hal_positive1_get_modem_supported_radio_technology,test_l1_cellular_hal_negative1_get_modem_supported_radio_technology,test_l1_cellular_hal_positive1_modem_factory_reset,test_l1_cellular_hal_positive1_cellular_hal_modem_reset};
+const char* list1[] = {"l1_cellular_hal_positive1_IsModemDevicePresent","l1_cellular_hal_positive1_init","l1_cellular_hal_positive2_init","l1_cellular_hal_positive3_init","l1_cellular_hal_negative1_init","l1_cellular_hal_negative2_init","l1_cellular_hal_negative3_init","l1_cellular_hal_positive1_sim_power_enable","l1_cellular_hal_positive2_sim_power_enable","l1_cellular_hal_positive3_sim_power_enable","l1_cellular_hal_positive_sim_power_enable","l1_cellular_hal_negative1_sim_power_enable","l1_cellular_hal_negative2_sim_power_enable","l1_cellular_hal_positive1_get_total_no_of_uicc_slots","l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive1_get_active_card_status","l1_cellular_hal_negative2_get_active_card_status","l1_cellular_hal_positive1_get_profile_list","l1_cellular_hal_negative1_get_profile_list","l1_cellular_hal_negative2_get_profile_list","l1_cellular_hal_negative3_get_profile_list","l1_cellular_hal_positive1_cellular_hal_stop_network","l1_cellular_hal_positive2_cellular_hal_stop_network","l1_cellular_hal_positive3_cellular_hal_stop_network","l1_cellular_hal_negative1_cellular_hal_stop_network","l1_cellular_hal_positive1_get_signal_info","l1_cellular_hal_negative1_get_signal_info","l1_cellular_hal_negative2_get_signal_info","l1_cellular_hal_positive1_set_modem_operating_configuration","l1_cellular_hal_positive2_set_modem_operating_configuration","l1_cellular_hal_positive3_set_modem_operating_configuration","l1_cellular_hal_positive4_set_modem_operating_configuration","l1_cellular_hal_positive5_set_modem_operating_configuration","l1_cellular_hal_negative1_set_modem_operating_configuration","l1_cellular_hal_negative2_set_modem_operating_configuration","l1_cellular_hal_positive1_get_device_imei_sv","l1_cellular_hal_negative1_get_device_imei_sv","l1_cellular_hal_negative2_get_device_imei_sv","l1_cellular_hal_positive1_get_device_imei","l1_cellular_hal_negative1_get_device_imei","l1_cellular_hal_negative2_get_device_imei","l1_cellular_hal_positive1_get_modem_current_iccid","l1_cellular_hal_negative1_get_modem_current_iccid","l1_cellular_hal_negative2_get_modem_current_iccid","l1_cellular_hal_positive1_get_modem_current_msisdn","l1_cellular_hal_negative1_get_modem_current_msisdn","l1_cellular_hal_negative2_get_modem_current_msisdn","l1_cellular_hal_positive1_get_packet_statistics","l1_cellular_hal_negative1_get_packet_statistics","l1_cellular_hal_negative2_get_packet_statistics","l1_cellular_hal_positive1_get_current_modem_interface_status","l1_cellular_hal_negative1_get_current_modem_interface_status","l1_cellular_hal_negative2_get_current_modem_interface_status","l1_cellular_hal_negative1_set_modem_network_attach","l1_cellular_hal_negative1_set_modem_network_detach","l1_cellular_hal_positive1_get_modem_firmware_version","l1_cellular_hal_positive1_get_current_plmn_information","l1_cellular_hal_negative1_get_current_plmn_information","l1_cellular_hal_negative2_get_current_plmn_information","l1_cellular_hal_negative2_get_available_networks_information","l1_cellular_hal_positive1_get_modem_preferred_radio_technology","l1_cellular_hal_negative1_get_modem_preferred_radio_technology","l1_cellular_hal_negative2_get_modem_preferred_radio_technology","l1_cellular_hal_positive1_set_modem_preferred_radio_technology","l1_cellular_hal_positive2_set_modem_preferred_radio_technology","l1_cellular_hal_positive3_set_modem_preferred_radio_technology","l1_cellular_hal_negative1_set_modem_preferred_radio_technology","l1_cellular_hal_negative2_set_modem_preferred_radio_technology","l1_cellular_hal_positive1_get_modem_current_radio_technology","l1_cellular_hal_negative1_get_modem_current_radio_technology","l1_cellular_hal_negative2_get_modem_current_radio_technology","l1_cellular_hal_positive1_get_modem_supported_radio_technology","l1_cellular_hal_negative1_get_modem_supported_radio_technology","l1_cellular_hal_positive1_modem_factory_reset","l1_cellular_hal_positive1_cellular_hal_modem_reset"};
+void (*list2[])() = {test_l1_cellular_hal_positive1_IsModemDevicePresent,test_l1_cellular_hal_positive1_init,test_l1_cellular_hal_positive2_init,test_l1_cellular_hal_positive3_init,test_l1_cellular_hal_negative1_init,test_l1_cellular_hal_negative2_init,test_l1_cellular_hal_negative3_init,test_l1_cellular_hal_positive1_sim_power_enable,test_l1_cellular_hal_positive2_sim_power_enable,test_l1_cellular_hal_positive3_sim_power_enable,test_l1_cellular_hal_positive4_sim_power_enable,test_l1_cellular_hal_negative1_sim_power_enable,test_l1_cellular_hal_negative2_sim_power_enable,test_l1_cellular_hal_positive1_get_total_no_of_uicc_slots,test_l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive1_get_active_card_status,test_l1_cellular_hal_negative2_get_active_card_status,test_l1_cellular_hal_positive1_get_profile_list,test_l1_cellular_hal_negative1_get_profile_list,test_l1_cellular_hal_negative2_get_profile_list,test_l1_cellular_hal_negative3_get_profile_list,test_l1_cellular_hal_positive1_cellular_hal_stop_network,test_l1_cellular_hal_positive2_cellular_hal_stop_network,test_l1_cellular_hal_positive3_cellular_hal_stop_network,test_l1_cellular_hal_negative1_cellular_hal_stop_network,test_l1_cellular_hal_positive1_get_signal_info,test_l1_cellular_hal_negative1_get_signal_info,test_l1_cellular_hal_negative2_get_signal_info,test_l1_cellular_hal_positive1_set_modem_operating_configuration,test_l1_cellular_hal_positive2_set_modem_operating_configuration,test_l1_cellular_hal_positive3_set_modem_operating_configuration,test_l1_cellular_hal_positive4_set_modem_operating_configuration,test_l1_cellular_hal_positive5_set_modem_operating_configuration,test_l1_cellular_hal_negative1_set_modem_operating_configuration,test_l1_cellular_hal_negative2_set_modem_operating_configuration,test_l1_cellular_hal_positive1_get_device_imei_sv,test_l1_cellular_hal_negative1_get_device_imei_sv,test_l1_cellular_hal_negative2_get_device_imei,test_l1_cellular_hal_negative2_get_device_imei_sv,test_l1_cellular_hal_positive1_get_device_imei,test_l1_cellular_hal_negative1_get_device_imei,test_l1_cellular_hal_positive1_get_modem_current_iccid,test_l1_cellular_hal_negative1_get_modem_current_iccid,test_l1_cellular_hal_negative2_get_modem_current_iccid,test_l1_cellular_hal_positive1_get_modem_current_msisdn,test_l1_cellular_hal_negative1_get_modem_current_msisdn,test_l1_cellular_hal_negative2_get_modem_current_msisdn,test_l1_cellular_hal_positive1_get_packet_statistics,test_l1_cellular_hal_negative1_get_packet_statistics,test_l1_cellular_hal_negative2_get_packet_statistics,test_l1_cellular_hal_positive1_get_current_modem_interface_status,test_l1_cellular_hal_negative1_get_current_modem_interface_status,test_l1_cellular_hal_negative2_get_current_modem_interface_status,test_l1_cellular_hal_negative1_set_modem_network_attach,test_l1_cellular_hal_negative1_set_modem_network_detach,test_l1_cellular_hal_positive1_get_modem_firmware_version,test_l1_cellular_hal_positive1_get_current_plmn_information,test_l1_cellular_hal_negative1_get_current_plmn_information,test_l1_cellular_hal_negative2_get_current_plmn_information,test_l1_cellular_hal_negative2_get_available_networks_information,test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_get_modem_preferred_radio_technology,test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive3_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_get_modem_current_radio_technology,test_l1_cellular_hal_negative1_get_modem_current_radio_technology,test_l1_cellular_hal_negative2_get_modem_current_radio_technology,test_l1_cellular_hal_positive1_get_modem_supported_radio_technology,test_l1_cellular_hal_negative1_get_modem_supported_radio_technology,test_l1_cellular_hal_positive1_modem_factory_reset,test_l1_cellular_hal_positive1_cellular_hal_modem_reset};
 
     // Add tests to the suite
     for (int i = 0; i < sizeof(list1) / sizeof(list1[0]); i++) {

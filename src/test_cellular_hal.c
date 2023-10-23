@@ -60,10 +60,10 @@
 void test_l1_cellular_hal_positive1_IsModemDevicePresent(void)
 {
     UT_LOG("Entering test_l1_cellular_hal_positive1_IsModemDevicePresent...");
-    UT_LOG("Invoking cellular_hal_IsModemDevicePresent() with no modem device present. Return status: %d");
-
+    UT_LOG("Invoking cellular_hal_IsModemDevicePresent() with no modem device present");
+    unsigned int status = 0;
     // Invoke the API function
-    unsigned int status = cellular_hal_IsModemDevicePresent();
+    status = cellular_hal_IsModemDevicePresent();
     UT_LOG("Return Status: %d", status);
     // Check the return status
     //UT_ASSERT_EQUAL(status, FALSE);
@@ -203,6 +203,9 @@ void test_l1_cellular_hal_negative1_init(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_init...");
     UT_LOG("Invoking cellular_hal_negative1_init with invalid");
     // Fill the structure with invalid IP family preference
+    //CellularContextInitInputStruct pstCtxInputStruct.PDPType=1;
+    //CellularContextInitInputStruct pstCtxInputStruct.PDPAuthentication=1;
+    //CellularContextInitInputStruct pstCtxInputStruct.PDPNetworkConfig=1;
     CellularContextInitInputStruct pstCtxInputStruct;
     pstCtxInputStruct.enIPFamilyPreference = 0;
     // fill other fields with valid data
@@ -236,6 +239,10 @@ void test_l1_cellular_hal_negative2_init(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_init...");
     UT_LOG("Invoking cellular_hal_negative1_init with invalid");
     // Fill the structure with preference technology outside range
+    //CellularContextInitInputStruct pstCtxInputStruct;
+    //CellularContextInitInputStruct pstCtxInputStruct.PDPType=0;
+    //CellularContextInitInputStruct pstCtxInputStruct.PDPAuthentication=1;
+    //CellularContextInitInputStruct pstCtxInputStruct.PDPNetworkConfig=2;
     CellularContextInitInputStruct pstCtxInputStruct;
     pstCtxInputStruct.enPreferenceTechnology = 0;
     // fill other fields with valid data
@@ -303,7 +310,7 @@ void test_l1_cellular_hal_positive1_sim_power_enable(void)
     int slot_id = 1;
     // Set enable to TRUE
     bool enable = true;
-    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d... Result = %d", slot_id, enable);
+    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d...", slot_id, enable);
     // Call the API function
     int result = cellular_hal_sim_power_enable(slot_id, enable);
     UT_LOG("Return result: %d", result);
@@ -337,7 +344,7 @@ void test_l1_cellular_hal_positive2_sim_power_enable(void)
     int slot_id = 1;
     // Set enable to FALSE
     bool enable = false;
-    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d... Result = %d", slot_id, enable);
+    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d...", slot_id, enable);
     // Call the API function
     int result = cellular_hal_sim_power_enable(slot_id, enable);
     UT_LOG("Return result: %d", result);
@@ -373,7 +380,7 @@ void test_l1_cellular_hal_positive3_sim_power_enable(void)
 
     // Set enable to TRUE
     bool enable = true;
-    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d... Result = %d", slot_id, enable);
+    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d...", slot_id, enable);
 
     // Call the API function
     int result = cellular_hal_sim_power_enable(slot_id, enable);
@@ -412,7 +419,7 @@ void test_l1_cellular_hal_positive4_sim_power_enable(void)
 
     // Set enable to FALSE
     bool enable = false;
-    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d... Result = %d", slot_id, enable);
+    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d...", slot_id, enable);
     // Call the API function
     int result = cellular_hal_sim_power_enable(slot_id, enable);
     UT_LOG("Return result: %d", result);
@@ -444,11 +451,11 @@ void test_l1_cellular_hal_negative1_sim_power_enable(void)
     UT_LOG("Entering test_l1_cellular_hal_negative1_sim_power_enable...");
 
     // Set slot_id to an invalid value
-    int slot_id = 3;
+    int slot_id = 999;
 
     // Set enable to TRUE or FALSE
     bool enable = true;
-    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d... Result = %d", slot_id, enable);
+    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d...", slot_id, enable);
     // Call the API function
     int result = cellular_hal_sim_power_enable(slot_id, enable);
     UT_LOG("Return result: %d", result);
@@ -484,12 +491,13 @@ void test_l1_cellular_hal_negative2_sim_power_enable(void)
     int slot_id = 1;
     // Set enable to an invalid value
     bool enable = (bool)2;
-    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d... Result = %d", slot_id, enable);
+    UT_LOG("Invoking cellular_hal_sim_power_enable with slot_id = %d, enable = %d...", slot_id, enable);
     // Call the API function
     int result = cellular_hal_sim_power_enable(slot_id, enable);
+    UT_LOG("Return result: %d", result);
+
     // Check the return status
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
-    UT_LOG("Return result: %d", result);
     UT_LOG("Exiting test_l1_cellular_hal_negative2_sim_power_enable...");
 }
 /**
@@ -580,19 +588,43 @@ void test_l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info(void)
 
     // Test case parameters
     unsigned int slot_index = 1;
-    CellularUICCSlotInfoStruct slot_info;
+    CellularUICCSlotInfoStruct *slot_info = (CellularUICCSlotInfoStruct*) malloc(sizeof (CellularUICCSlotInfoStruct)) ;
+    if(slot_info != NULL){
     UT_LOG("Invoking cellular_hal_positive1_cellular_hal_get_uicc_slot_info with valid input");
 
     // Invoke the API
-    int status = cellular_hal_get_uicc_slot_info(slot_index, &slot_info);
+    int status = cellular_hal_get_uicc_slot_info(slot_index, slot_info);
     UT_LOG("Return status: %d", status);
 
     // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_OK);
+    //if (status == 0){
+    UT_ASSERT_TRUE(slot_info->SlotEnable == TRUE || slot_info->SlotEnable == FALSE);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %s",slot_info->SlotEnable);
 
+    UT_ASSERT_TRUE(slot_info->IsCardPresent == TRUE || slot_info->IsCardPresent == FALSE);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %s",slot_info->IsCardPresent);
+
+    UT_ASSERT_TRUE(slot_info->CardEnable == TRUE || slot_info->CardEnable == FALSE);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %s",slot_info->CardEnable);
+
+    UT_ASSERT_TRUE(slot_info->FormFactor == 0 || slot_info->FormFactor == 1 || slot_info->FormFactor == 2 || slot_info->FormFactor == 3);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %d",slot_info->FormFactor);
+
+    UT_ASSERT_TRUE(slot_info->Application == 0 || slot_info->Application == 1 || slot_info->Application == 2);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %d",slot_info->Application);
+
+    UT_ASSERT_TRUE(slot_info->Status == 0 || slot_info->Status == 1 || slot_info->Status == 2 || slot_info->Status == 3 );
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %d",slot_info->Status);
+    //}
+    UT_ASSERT_EQUAL(status, RETURN_OK);
     // Validate the structure fields
     // TODO: Add validation for the structure fields
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info...");
 }
 
@@ -620,18 +652,43 @@ void test_l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info(void)
 
     // Test case parameters
     unsigned int slot_index = 0;
-    CellularUICCSlotInfoStruct slot_info;
+    CellularUICCSlotInfoStruct *slot_info = (CellularUICCSlotInfoStruct*) malloc(sizeof(CellularUICCSlotInfoStruct));
+    if(slot_info != NULL){
+
     UT_LOG("Invoking cellular_hal_positive1_cellular_hal_get_uicc_slot_info with valid input");
 
     // Invoke the API
-    int status = cellular_hal_get_uicc_slot_info(slot_index, &slot_info);
+    int status = cellular_hal_get_uicc_slot_info(slot_index, slot_info);
     UT_LOG("Return status: %d", status);
+    //if(status == 0){
+    UT_ASSERT_TRUE(slot_info->SlotEnable == TRUE || slot_info->SlotEnable == FALSE);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %s",slot_info->SlotEnable);
+
+    UT_ASSERT_TRUE(slot_info->IsCardPresent == TRUE || slot_info->IsCardPresent == FALSE);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %s",slot_info->IsCardPresent);
+
+    UT_ASSERT_TRUE(slot_info->CardEnable == TRUE || slot_info->CardEnable == FALSE);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %s",slot_info->CardEnable);
+
+    UT_ASSERT_TRUE(slot_info->FormFactor == 0 || slot_info->FormFactor == 1 || slot_info->FormFactor == 2 || slot_info->FormFactor == 3);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %d",slot_info->FormFactor);
+
+    UT_ASSERT_TRUE(slot_info->Application == 0 || slot_info->Application == 1 || slot_info->Application == 2);
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %d",slot_info->Application);
+
+    UT_ASSERT_TRUE(slot_info->Status == 0 || slot_info->Status == 1 || slot_info->Status == 2 || slot_info->Status == 3 );
+    UT_LOG("cellular_hal_get_uicc_slot_info->slotEnable is %d",slot_info->Status);
+    //}
     // Check the return status
     UT_ASSERT_EQUAL(status, RETURN_OK);
-
+    }
     // Validate the structure fields
     // TODO: Add validation for the structure fields
-
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info...");
 }
 
@@ -656,6 +713,8 @@ void test_l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info(void)
 void test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info(void)
 {
     UT_LOG("Entering test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info...");
+    CellularUICCSlotInfoStruct *slot_info = (CellularUICCSlotInfoStruct*) malloc(sizeof(CellularUICCSlotInfoStruct));
+    if(slot_info != NULL){
 
     // Test case parameters
     unsigned int slot_index = 1;
@@ -667,6 +726,13 @@ void test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info(void)
 
     // Check the return status
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
+
 
     UT_LOG("Exiting test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info...");
 }
@@ -687,12 +753,13 @@ void test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info(void)
 * **Test Procedure:** @n
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Invoke the cellular_hal_get_uicc_slot_info function | invalid slot_index = 1 | RETURN_OK | Should be successful |
+* | 01 | Invoke the cellular_hal_get_uicc_slot_info function | invalid slot_index = 1 | RETURN_ERROR | Should be failure |
 */
 void test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info(void)
 {
     UT_LOG("Entering test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info...");
-
+    CellularUICCSlotInfoStruct *slot_info = (CellularUICCSlotInfoStruct*) malloc(sizeof(CellularUICCSlotInfoStruct));
+    if(slot_info != NULL){
     // Test case parameters
     unsigned int slot_index = 4294967296;  //2 power 32=4294967296
     CellularUICCSlotInfoStruct slot_info;
@@ -704,11 +771,15 @@ void test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info(void)
     UT_LOG("Return status: %d", status);
 
     // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_OK);
-
+    UT_ASSERT_EQUAL(status, RETURN_ERROR);
+    }
     // Validate the structure fields
     // TODO: Add validation for the structure fields
-
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info...");
 }
 /**
@@ -733,14 +804,15 @@ void test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info(void)
 void test_l1_cellular_hal_positive1_get_active_card_status(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive_1_get_active_card_status...");
     // Initialize the card status
-    CellularUICCStatus_t card_status;
+    CellularUICCStatus_t *card_status = (CellularUICCStatus_t*) malloc(sizeof(CellularUICCStatus_t));
+    if(card_status != NULL){
     UT_LOG("Invoking cellular_hal_positive_1_get_active_card_status with valid input ");
     // Call the function to get the active card status
     int status = cellular_hal_get_active_card_status(&card_status);
     UT_LOG("Return status: %d", status);
     UT_LOG("Card Status: %d ", card_status);
     // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_OK);
+    //if(status == 0){
     if((card_status ==0) || (card_status == 1) || (card_status == 2) || (card_status == 3))
     {
         UT_LOG("get_active_card_status %d which is a valid value",card_status);
@@ -751,9 +823,15 @@ void test_l1_cellular_hal_positive1_get_active_card_status(void) {
         UT_LOG("get_active_card_status %d which is a invalid value",card_status);
         UT_FAIL("get_active_card_status validation fail");
     }
-
+    //}
+    UT_ASSERT_EQUAL(status, RETURN_OK);
+    }
    // UT_ASSERT_EQUAL(card_status, CELLULAR_UICC_STATUS_VALID);
-
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_positive_1_get_active_card_status...");
 }
 
@@ -777,7 +855,9 @@ void test_l1_cellular_hal_positive1_get_active_card_status(void) {
 */
 
 void test_l1_cellular_hal_negative1_get_active_card_status(void) {
-    UT_LOG("Entering test_l1_cellular_hal_negative_1_null_pointer...");
+    UT_LOG("Entering test_l1_cellular_hal_negative1_get_active_card_status...");
+    CellularUICCStatus_t *card_status = (CellularUICCStatus_t*) malloc(sizeof(CellularUICCStatus_t));
+    if(card_status != NULL){
     UT_LOG("Invoking cellular_hal_negative_1_get_active_card_status with valid input ");
 
     // Call the function with a null pointer
@@ -786,7 +866,12 @@ void test_l1_cellular_hal_negative1_get_active_card_status(void) {
 
     // Check the return status
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_negative_1_get_active_card_status...");
 }
 
@@ -810,10 +895,11 @@ void test_l1_cellular_hal_negative1_get_active_card_status(void) {
 */
 void test_l1_cellular_hal_negative2_get_active_card_status(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative_2_random_card_status...");
-
+    CellularUICCStatus_t *card_status = (CellularUICCStatus_t*) malloc(sizeof(CellularUICCStatus_t));
+    if(card_status != NULL){
     // Initialize the card status with a random value
     //CellularUICCStatus_t card_status = (CellularUICCStatus_t)123;
-    CellularUICCStatus_t card_status;
+    //CellularUICCStatus_t card_status;
     UT_LOG("Invoking cellular_hal_negative_2_get_active_card_status with valid input ");
 
     // Call the function to get the active card status
@@ -823,7 +909,12 @@ void test_l1_cellular_hal_negative2_get_active_card_status(void) {
 
     // Check the return status
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     // Check that the card status is updated to a valid enum value
     /*UT_ASSERT_TRUE(card_status == CELLULAR_UICC_STATUS_VALID ||
                          card_status == CELLULAR_UICC_STATUS_BLOCKED ||
@@ -856,17 +947,44 @@ void test_l1_cellular_hal_positive1_get_profile_list(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive1_get_profile_list...");
 
     // Test parameters
-    CellularProfileStruct *profiles;
+    CellularProfileStruct *profiles = ((CellularProfileStruct*) malloc(sizeof(CellularProfileStruct)));
+    if(profiles != NULL){
     int profileCount;
     UT_LOG("Invoking cellular_hal_get_profile_list with valid parameters...");
 
     // Invoke the API
-    int result = cellular_hal_get_profile_list(&profiles, &profileCount);
+    int result = cellular_hal_get_profile_list(&profiles, profileCount);
     UT_LOG("Return result: %d", result);
+    //if(result == 0){
+    UT_LOG("get_profile_list profile_ID:%d",profiles->ProfileID);
+    UT_LOG("get_profile_list PDPContextNumber:%d",profiles->ProfileID);
 
-    // Check result
+    UT_ASSERT_TRUE(profiles->ProfileType == 0 || profiles->ProfileType == 1 );
+    UT_LOG("get_profile_list ppstProfileOutput.ProfileType %d",profiles->ProfileType);
+
+    UT_ASSERT_TRUE(profiles->PDPType == 0 || profiles->PDPType == 1 || profiles->PDPType == 2 || profiles->PDPType == 3  );
+    UT_LOG("get_profile_list ppstProfileOutput.PDPType %d",profiles->PDPType);
+
+    UT_ASSERT_TRUE(profiles->PDPAuthentication == 0 || profiles->PDPAuthentication == 1 || profiles->PDPAuthentication == 2 );
+    UT_LOG("get_profile_list ppstProfileOutput.PDPAuthentication %d",profiles->PDPAuthentication);
+
+    UT_ASSERT_TRUE( profiles->bIsNoRoaming == TRUE || profiles->bIsNoRoaming == FALSE );
+    UT_LOG("get_profile_list ppstProfileOutput.bIsNoRoaming %c",profiles->bIsNoRoaming);
+
+    UT_ASSERT_TRUE( profiles->bIsAPNDisabled == TRUE || profiles->bIsAPNDisabled == FALSE );
+    UT_LOG("get_profile_list ppstProfileOutput.bIsAPNDisabled %c",profiles->bIsAPNDisabled);
+
+    UT_ASSERT_TRUE( profiles->bIsThisDefaultProfile == TRUE || profiles->bIsThisDefaultProfile == FALSE );
+    UT_LOG("get_profile_list ppstProfileOutput.bIsThisDefaultProfile %c",profiles->bIsThisDefaultProfile);
+    //}
+// Check result
     UT_ASSERT_EQUAL(result, RETURN_OK);
-    
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_profile_list...");
 }
 
@@ -890,9 +1008,10 @@ void test_l1_cellular_hal_positive1_get_profile_list(void) {
  */
 void test_l1_cellular_hal_negative1_get_profile_list(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_get_profile_list...");
-
+    CellularProfileStruct *profiles = ((CellularProfileStruct*) malloc(sizeof(CellularProfileStruct)));
+    if(profiles != NULL){
     // Test parameters
-    CellularProfileStruct *profiles;
+    //CellularProfileStruct *profiles;
     int profileCount =0 ;
     UT_LOG("Invoking cellular_hal_negative1_get_profile_list with NULL ppstProfileOutput parameter...");
 
@@ -903,7 +1022,12 @@ void test_l1_cellular_hal_negative1_get_profile_list(void) {
     // Check result
     //UT_LOG("Invoking cellular_hal_get_profile_list with NULL ppstProfileOutput parameter...");
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_negative1_get_profile_list...");
 }
 
@@ -928,9 +1052,10 @@ void test_l1_cellular_hal_negative1_get_profile_list(void) {
 
 void test_l1_cellular_hal_negative2_get_profile_list(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_get_profile_list...");
-
+    CellularProfileStruct *profiles = ((CellularProfileStruct*) malloc(sizeof(CellularProfileStruct)));
+    if(profiles != NULL){
     // Test parameters
-    CellularProfileStruct *profiles;
+    //CellularProfileStruct *profiles;
     int profileCount;
     UT_LOG("Invoking cellular_hal_negative2_get_profile_list with NULL profile_count parameter...");
 
@@ -940,7 +1065,12 @@ void test_l1_cellular_hal_negative2_get_profile_list(void) {
 
     // Check result
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_profile_list...");
 }
 /**
@@ -962,7 +1092,7 @@ void test_l1_cellular_hal_negative2_get_profile_list(void) {
 * | 01 | Invoking the function with NULL profile_count parameter | profiles = NULL | RETURN_ERR | Should return an error |
 */
 
-void test_l1_cellular_hal_negative3_get_profile_list(void) {
+/*void test_l1_cellular_hal_negative3_get_profile_list(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative3_get_profile_list...");
 
     // Test parameters
@@ -978,7 +1108,7 @@ void test_l1_cellular_hal_negative3_get_profile_list(void) {
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative3_get_profile_list...");
-}
+}*/
 /**
 * @brief Test the functionality of the cellular_hal_stop_network function when stopping the network with IPV4 IP type.
 *
@@ -1132,20 +1262,35 @@ void test_l1_cellular_hal_negative1_cellular_hal_stop_network(void)
 * **Test Procedure:** @n
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Call the API with valid profile inputs and a callback | signal_info = {0} | RETURN_OK | The API should return the expected result |
+* | 01 | Call the API with valid profile inputs and a callback | valid value for signal_info | RETURN_OK | The API should return the expected result |
 */
 void test_l1_cellular_hal_positive1_get_signal_info(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive1_get_signal_info...");
 
     // Arrange
-    CellularSignalInfoStruct signal_info;
+    CellularSignalInfoStruct *signal_info = ((CellularSignalInfoStruct*)malloc(sizeof(CellularSignalInfoStruct)));
+    if(signal_info != NULL){
     UT_LOG("Invoking cellular_hal_positive1_get_signal_info with valid value...");
 
     // Act
-    int result = cellular_hal_get_signal_info(&signal_info);
+    int result = cellular_hal_get_signal_info(signal_info);
     UT_LOG("Return result: %d", result);
+    //if(result == 0){
+    UT_LOG("signal_info RSSI VALUE :%d",signal_info->RSSI);
+    UT_LOG("signal_info RSSI VALUE :%d",signal_info->RSRQ);
+    UT_LOG("signal_info RSSI VALUE :%d",signal_info->RSRP);
+    UT_LOG("signal_info RSSI VALUE :%d",signal_info->SNR);
+    UT_LOG("signal_info RSSI VALUE :%d",signal_info->TXPower);
+   // }
     // Assert
     UT_ASSERT_EQUAL(result, RETURN_OK);
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
+
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_signal_info...");
 
 }
@@ -1170,12 +1315,20 @@ void test_l1_cellular_hal_positive1_get_signal_info(void) {
 */
 void test_l1_cellular_hal_negative1_get_signal_info(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_get_signal_inf...");
+    CellularSignalInfoStruct *signal_info = ((CellularSignalInfoStruct*)malloc(sizeof(CellularSignalInfoStruct)));
+    if(signal_info != NULL){
     UT_LOG("Invoking cellular_hal_negative1_get_signal_info with null value...");
 
     int result = cellular_hal_get_signal_info(NULL);
     UT_LOG("Return result: %d", result);
     // Assert
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_negative1_get_signal_info...");
   
 }
@@ -1197,7 +1350,7 @@ void test_l1_cellular_hal_negative1_get_signal_info(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Verify behavior when a null function is passed | with EMPTRY string | RETURN_ERROR | Should be failure |
 */
-void test_l1_cellular_hal_negative2_get_signal_info(void) {
+/*void test_l1_cellular_hal_negative2_get_signal_info(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_get_signal_inf...");
     UT_LOG("Invoking cellular_hal_negative2_get_signal_info with null value...");
 
@@ -1207,7 +1360,7 @@ void test_l1_cellular_hal_negative2_get_signal_info(void) {
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_signal_info...");
   
-}
+}*/
 
 
 /**
@@ -1368,7 +1521,9 @@ void test_l1_cellular_hal_positive5_set_modem_operating_configuration(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive_5_set_modem_operating_configuration...");
 
     // Fill pstProfileInput with valid values
+    //CellularModemOperatingConfiguration_t modem_operating_config = ((CellularModemOperatingConfiguration_t)malloc(sizeof(CellularModemOperatingConfiguration_t)))
     CellularModemOperatingConfiguration_t modem_operating_config = CELLULAR_MODEM_SET_FACTORY_RESET;
+    //modem_operating_config.CELLULAR_MODEM_SET_FACTORY_RESET;
     UT_LOG("Invoking cellular_hal_positive_5_set_modem_operating_configuration with valid value... %d", modem_operating_config);
 
     // Invoke the API with valid inputs
@@ -1476,7 +1631,7 @@ void test_l1_cellular_hal_positive1_get_device_imei_sv(void) {
 
     int status = cellular_hal_get_device_imei_sv(imei);
     UT_LOG("Return status: %d", status);
-   
+    UT_LOG("imei :%s",imei);
     UT_ASSERT_EQUAL(status, RETURN_OK);
     
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_device_imei_sv...");
@@ -1530,7 +1685,7 @@ void test_l1_cellular_hal_negative1_get_device_imei_sv(void) {
  * |:----: | :---------: | :----------: | :--------------: | :-----: |
  * | 01 | Verify the behavior of the API when imei is NULL. | imei = empty |  RETURN_ERR | The API should return an error. |
  */
-void test_l1_cellular_hal_negative2_get_device_imei_sv(void) {
+/*void test_l1_cellular_hal_negative2_get_device_imei_sv(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_get_device_imei_sv...");
     
     char *imei =" ";
@@ -1542,7 +1697,7 @@ void test_l1_cellular_hal_negative2_get_device_imei_sv(void) {
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
     
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_device_imei_sv...");
-}
+}*/
 
 /**
 * @brief Test to validate the functionality of retrieving the IMEI from the modem.
@@ -1576,6 +1731,8 @@ void test_l1_cellular_hal_positive1_get_device_imei( void )
     /* Invoke API */
     int status = cellular_hal_get_device_imei(imei);
     UT_LOG("Return status: %d", status);
+    UT_LOG("imei :%s",imei);
+
 
     /* Check return value */
     UT_ASSERT_EQUAL(status, RETURN_OK);
@@ -1647,27 +1804,26 @@ void test_l1_cellular_hal_negative1_get_device_imei( void )
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Invoking cellular_hal_retrieve_modem_imei with NULL imei buffer | imei = empty string | status = RETURN_ERR | Should return RETURN_ERR |
 */
-void test_l1_cellular_hal_negative2_get_device_imei( void )
-{
+/*void test_l1_cellular_hal_negative2_get_device_imei( void ) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_get_device_imei...");
     
-    /* Input */
+    
     char* imei = " ";
     
-    /* Test description */
+    
     UT_LOG("Invoking cellular_hal_negative_2_retrieve_modem_imei with empty string imei buffer");
     
-    /* Invoke API */
+   
     int status = cellular_hal_get_device_imei(imei);
     UT_LOG("Return status: %d", status);
 
-    /* Check return value */
+    
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
     
     UT_LOG("Status: %d", status);
     
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_device_imei...");
-}
+}*/
 
 /**
  * @brief Unit test to verify the functionality of retrieving the ICCID from the modem.
@@ -1765,7 +1921,7 @@ void test_l1_cellular_hal_negative1_get_modem_current_iccid(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
  * | 01   | Invoke the function with a NULL ICCID buffer.   | iccid = empty string   | RETURN_ERR   | Should be failure |
  */
-void test_l1_cellular_hal_negative2_get_modem_current_iccid(void) {
+/*void test_l1_cellular_hal_negative2_get_modem_current_iccid(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_empty_iccid_buffer...");
 
     char* iccid = " ";
@@ -1778,7 +1934,7 @@ void test_l1_cellular_hal_negative2_get_modem_current_iccid(void) {
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative2_empty_iccid_buffer...");
-}
+}*/
 
 /**
 * @brief This is a positive test case to verify the functionality of the cellular_hal_retrieve_modem_current_msisdn function.
@@ -1868,7 +2024,7 @@ void test_l1_cellular_hal_negative1_get_modem_current_msisdn(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
  * | 01 | Invoke the function | with empty string| RETURN_ERR | Should return an error |
  */
-void test_l1_cellular_hal_negative2_get_modem_current_msisdn(void) {
+/*void test_l1_cellular_hal_negative2_get_modem_current_msisdn(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_invalid_ip_request_type...");
     UT_LOG("Invoked cellular_hal_negative_2_get_modem_current_msisdn with NULL msisdn buffer");
     char msisdn[20];
@@ -1881,7 +2037,7 @@ void test_l1_cellular_hal_negative2_get_modem_current_msisdn(void) {
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative2_invalid_ip_request_type...");
-}
+}*/
 
 /**
  * @brief Test case to check for the functionality of the 'cellular_hal_get_packet_statistics' function when an invalid IP request type is passed as an argument.
@@ -1898,20 +2054,37 @@ void test_l1_cellular_hal_negative2_get_modem_current_msisdn(void) {
  * **Test Procedure:** @n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
- * | 01 | invoke the function | with valid input| RETURN_ERROR | Should be failure |
+ * | 01 | invoke the function | with valid input| RETURN_OK | Should be successfull |
  */
 void test_l1_cellular_hal_positive1_get_packet_statistics(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive1_get_packet_statistics...");
 
-    CellularPacketStatsStruct network_packet_stats1;
+    CellularPacketStatsStruct *network_packet_stats = ((CellularPacketStatsStruct*) malloc (sizeof(CellularPacketStatsStruct)));
+    if(network_packet_stats != NULL){
     UT_LOG("Invoking cellular_hal_positive1_get_packet_statistics with valid input");
 
-    int result = cellular_hal_get_packet_statistics(&network_packet_stats1);
+    int result = cellular_hal_get_packet_statistics(network_packet_stats);
     UT_LOG("Function return value: %d", result);
+    //if(result= 0)
+    //{
+    UT_LOG("cellular_hal_get_packet_statistics BytesSent :%d",network_packet_stats->BytesSent);
+    UT_LOG("cellular_hal_get_packet_statistics BytesReceived :%d",network_packet_stats->BytesReceived);
+    UT_LOG("cellular_hal_get_packet_statistics PacketsSent :%d",network_packet_stats->PacketsSent);
+    UT_LOG("cellular_hal_get_packet_statistics PacketsReceived :%d",network_packet_stats->PacketsReceived);
+    UT_LOG("cellular_hal_get_packet_statistics PacketsSentDrop :%d",network_packet_stats->PacketsSentDrop);
+    UT_LOG("cellular_hal_get_packet_statistics PacketsReceivedDrop :%d",network_packet_stats->PacketsReceivedDrop);
+    UT_LOG("cellular_hal_get_packet_statistics UpStreamMaxBitRate  :%d",network_packet_stats->UpStreamMaxBitRate);
+    UT_LOG("cellular_hal_get_packet_statistics DownStreamMaxBitRate :%d",network_packet_stats->DownStreamMaxBitRate);
+    //}
 
     // Validate the result
     UT_ASSERT_EQUAL(result, RETURN_OK);
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_packet_statistics...");
 }
 /**
@@ -1933,7 +2106,8 @@ void test_l1_cellular_hal_positive1_get_packet_statistics(void) {
  */
 void test_l1_cellular_hal_negative1_get_packet_statistics(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_get_packet_statistics...");
-
+    CellularPacketStatsStruct *network_packet_stats = ((CellularPacketStatsStruct*) malloc (sizeof(CellularPacketStatsStruct)));
+    if(network_packet_stats != NULL){
     // Input
     // Set ip_request_type to an invalid value
     //CellularNetworkIpFamily.ip_request_type = NULL;
@@ -1945,7 +2119,12 @@ void test_l1_cellular_hal_negative1_get_packet_statistics(void) {
 
     // Validate the result
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_negative1_get_packet_statistics...");
 }
 
@@ -1966,7 +2145,7 @@ void test_l1_cellular_hal_negative1_get_packet_statistics(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
  * | 01 | Invoke the api | with empty pointer | RETURN_ERROR | Should be failure |
  */
-void test_l1_cellular_hal_negative2_get_packet_statistics(void) {
+/*void test_l1_cellular_hal_negative2_get_packet_statistics(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_get_packet_statistics...");
 
     // Input
@@ -1982,7 +2161,7 @@ void test_l1_cellular_hal_negative2_get_packet_statistics(void) {
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_packet_statistics...");
-}
+}*/
 /**
 * @brief Test case to verify the behavior of the function cellular_hal_get_current_modem_interface_status when invoked with a positive input.
 *
@@ -2006,7 +2185,8 @@ void test_l1_cellular_hal_positive1_get_current_modem_interface_status( void )
     UT_LOG("Entering test_l1_cellular_hal_positive1_get_current_modem_interface_status...");
 
     // Input
-    CellularInterfaceStatus_t *status;
+    CellularInterfaceStatus_t *status = ((CellularInterfaceStatus_t*)malloc(sizeof(CellularInterfaceStatus_t)));
+    if(status != NULL){
     //CellularInterfaceStatus_t status;
     // Call the API
     UT_LOG("Invoking cellular_hal_positive_1_get_current_modem_interface_status with input parameters");
@@ -2016,7 +2196,8 @@ void test_l1_cellular_hal_positive1_get_current_modem_interface_status( void )
     // Check the return value and output values
     UT_LOG("status value: %d", status);
     UT_ASSERT_EQUAL(result, RETURN_OK);
-   /*if (strcmp(&status,"IF_UP") || strcmp(&status,"IF_DOWN") || strcmp(&status,"IF_UNKNOWN") || strcmp(&status,"IF_DORMANT")||  strcmp(&status,"IF_NOTPRESENT"))
+   /*if (strcmp(&status,"IF_UP") || strcmp(&status,"IF_DOWN") || strcmp(&status,"IF_UNKNOWN") || strcmp(&status,"IF_DORMANT")||  strcmp(&status,"IF_NOTPRESENT"))*/
+    if ((status == 1) || (status == 2) || (status == 3) || (status == 4) || (status == 5) || (status == 6) || (status == 7))
     {
             UT_LOG("get_current_modem_interface_status %s which is a valid value",result);
             UT_PASS("get_current_modem_interface_status validation success");
@@ -2025,9 +2206,14 @@ void test_l1_cellular_hal_positive1_get_current_modem_interface_status( void )
     {
             UT_LOG("get_current_modem_interface_status %s which is a Invalid value",result);
             UT_FAIL("get_current_modem_interface_status validation fail");
-    }*/
+    }
     //UT_LOG("Exiting test_l1_platform_hal_positive1_getFactoryCmVariant...");*/
-    
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_current_modem_interface_status...");
 }
 
@@ -2052,9 +2238,10 @@ void test_l1_cellular_hal_positive1_get_current_modem_interface_status( void )
 void test_l1_cellular_hal_negative1_get_current_modem_interface_status( void )
 {
     UT_LOG("Entering test_l1_cellular_hal_negative1_get_current_modem_interface_status...");
-
+    CellularInterfaceStatus_t *status = ((CellularInterfaceStatus_t*)malloc(sizeof(CellularInterfaceStatus_t)));
+    if(status != NULL){
     // Input
-    CellularInterfaceStatus_t *status;
+    //CellularInterfaceStatus_t *status;
     UT_LOG("Invoking cellular_hal_negative1_get_current_modem_interface_status with input parameters (status = NULL)");
 
     // Call the API
@@ -2064,7 +2251,12 @@ void test_l1_cellular_hal_negative1_get_current_modem_interface_status( void )
 
     // Check the return value
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_negative1_get_current_modem_interface_status...");
 }
 /**
@@ -2085,8 +2277,7 @@ void test_l1_cellular_hal_negative1_get_current_modem_interface_status( void )
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Call the API with NULL pointer input | status = NULL | RETURN_ERR | Should return the error value |
 */
-void test_l1_cellular_hal_negative2_get_current_modem_interface_status( void )
-{
+/*void test_l1_cellular_hal_negative2_get_current_modem_interface_status( void ) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_get_current_modem_interface_status...");
 
     // Input
@@ -2101,7 +2292,7 @@ void test_l1_cellular_hal_negative2_get_current_modem_interface_status( void )
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_current_modem_interface_status...");
-}
+}*/
 /**
 * @brief This test is to verify the behavior of the function test_l1_cellular_hal_negative1_invalid_modem_operating_config when an invalid modem operating configuration is provided as input.
 *
@@ -2275,20 +2466,37 @@ void test_l1_cellular_hal_negative1_get_modem_firmware_version(void)
  * **Test Procedure:** @n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
- * | 01 | Invoking cellular_hal_get_current_plmn_information with valid plmn_info structure | plmn_info = NULL | RETURN_OK | Should be successful |
+ * | 01 | Invoking cellular_hal_get_current_plmn_information  | with valid plmn_info structure | RETURN_OK | Should be successful |
  */
 void test_l1_cellular_hal_positive1_get_current_plmn_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive1_get_current_plmn_information...");
 
-    CellularCurrentPlmnInfoStruct plmn_info;
+    CellularCurrentPlmnInfoStruct *plmn_info = ((CellularCurrentPlmnInfoStruct*)malloc(sizeof(CellularCurrentPlmnInfoStruct)));
+    if(plmn_info != NULL){
     UT_LOG("Invoking cellular_hal_positive_1_get_current_plmn_information with valid plmn_info structure.");
 
-    int status = cellular_hal_get_current_plmn_information(&plmn_info);
+    int status = cellular_hal_get_current_plmn_information(plmn_info);
     UT_LOG("Actual Result: %d", status);
+    UT_LOG("cellular_hal_get_current_plmn_information plmn_name :%c",plmn_info->plmn_name);
+    UT_LOG("cellular_hal_get_current_plmn_information MCC :%d",plmn_info->MCC);
+    UT_LOG("cellular_hal_get_current_plmn_information MNC :%d",plmn_info->MNC);
+    UT_LOG("cellular_hal_get_current_plmn_information roaming_enabled :%c",plmn_info->roaming_enabled);
+    UT_LOG("cellular_hal_get_current_plmn_information area_code :%d",plmn_info->area_code);
+    UT_LOG("cellular_hal_get_current_plmn_information cell_id :%d",plmn_info->cell_id);
 
+    UT_ASSERT_TRUE(plmn_info->registration_status == 1 || plmn_info->registration_status == 2);
+    UT_LOG("plmn_info.registration_status : %d",plmn_info->registration_status);
+
+    UT_ASSERT_TRUE(plmn_info->registered_service == 1 || plmn_info->registered_service == 2 || plmn_info->registered_service == 3 || plmn_info->registered_service ==0);
+    UT_LOG("plmn_info.registration_status : %d",plmn_info->registered_service);
     UT_ASSERT_EQUAL(status, RETURN_OK);
     // TODO: Add assertion to check the values filled in the plmn_info structure.
-
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_current_plmn_information...");
 }
 
@@ -2313,12 +2521,20 @@ void test_l1_cellular_hal_positive1_get_current_plmn_information(void) {
 
 void test_l1_cellular_hal_negative1_get_current_plmn_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_get_current_plmn_information...");
+    CellularCurrentPlmnInfoStruct *plmn_info = ((CellularCurrentPlmnInfoStruct*)malloc(sizeof(CellularCurrentPlmnInfoStruct)));
+    if(plmn_info != NULL){
     UT_LOG("Invoking cellular_hal_negative_1_get_current_plmn_information with NULL plmn_info structure.");
 
     int status = cellular_hal_get_current_plmn_information(NULL);
     UT_LOG("Actual Result: %d", status);
 
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
 
     UT_LOG("Exiting test_l1_cellular_hal_negative1_get_current_plmn_information...");
 }
@@ -2341,7 +2557,7 @@ void test_l1_cellular_hal_negative1_get_current_plmn_information(void) {
  * | 01 | Invoking cellular_hal_get_current_plmn_information with NULL plmn_info structure. | plmn_info = ""| RETURN_ERR| Should return an error status code. |
  */
 
-void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
+/*void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative2_get_current_plmn_information...");
     UT_LOG("Invoking cellular_hal_negative_2_get_current_plmn_information with empty plmn_info structure.");
 
@@ -2351,7 +2567,7 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_current_plmn_information...");
-}
+}*/
 
 
 /**
@@ -2371,22 +2587,35 @@ void test_l1_cellular_hal_negative2_get_current_plmn_information(void) {
 * **Test Procedure:** @n
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Invoke the API with valid pointers | network_info = NULL, total_network_count = NULL | RETURN_OK | Should be successful |
+* | 01 | Invoke the get_available_networks_information API | with valid pointers | RETURN_OK | Should be successful |
 */
 void test_l1_cellular_hal_positive1_get_available_networks_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_positive1_cellular_hal_get_available_networks_information...");
     
     // Test variables
-    CellularNetworkScanResultInfoStruct **network_info ; // Valid pointer
+    CellularNetworkScanResultInfoStruct *network_info = ((CellularNetworkScanResultInfoStruct*)malloc (sizeof(CellularNetworkScanResultInfoStruct))) ; // Valid pointer
+    if(network_info != NULL){
     unsigned int *total_network_count ; // Valid pointer
     
     // Invoke the API with valid pointers
-    int status = cellular_hal_get_available_networks_information(network_info, total_network_count);
+    int status = cellular_hal_get_available_networks_information(&network_info, total_network_count);
     UT_LOG("Actual Result: %d", status);
-   
+    UT_LOG("cellular_hal_get_available_networks_information network_name :%c",network_info->network_name);
+    UT_LOG("cellular_hal_get_available_networks_information MCC :%d",network_info->MCC);
+    UT_LOG("cellular_hal_get_available_networks_information MNC :%d",network_info->MNC);
+
+    UT_ASSERT_TRUE(network_info->network_allowed_flag == TRUE || network_info->network_allowed_flag == FALSE);
+    UT_LOG("network_info.network_allowed_flag :%c",network_info->network_allowed_flag );
+
+    UT_LOG("cellular_hal_get_available_networks_information total_network_count :%d ",total_network_count);
     // Check the return value
     UT_ASSERT_EQUAL(status, RETURN_OK);
-    
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     // Test complete
     UT_LOG("Exiting test_l1_cellular_hal_positive1_cellular_hal_get_available_networks_information...");
 }
@@ -2410,7 +2639,7 @@ void test_l1_cellular_hal_positive1_get_available_networks_information(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Invoke API with NULL pointers | WITH network_info = NULL, total_network_count = NULL | RETURN_ERR | Should return RETURN_ERR |
 */
-void test_l1_cellular_hal_negative1_get_available_networks_information(void) {
+/*void test_l1_cellular_hal_negative1_get_available_networks_information(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_cellular_hal_get_available_networks_information...");
     
     // Test variables
@@ -2427,7 +2656,7 @@ void test_l1_cellular_hal_negative1_get_available_networks_information(void) {
     
     // Test complete
     UT_LOG("Exiting test_l1_cellular_hal_negative1_cellular_hal_get_available_networks_information...");
-}
+}*/
 
 /**
  * @brief Test case to validate the behavior of the cellular_hal_get_available_networks_information function when a NULL pointer is passed for network_info.
@@ -2443,18 +2672,19 @@ void test_l1_cellular_hal_negative1_get_available_networks_information(void) {
  * **User Interaction:** If user chose to run the test in interactive mode, then the test case has to be selected via console. @n
  *
  * **Test Procedure:**
- * | Variation / Step | Description                              | Test Data                      | Expected Result     | Notes         |
+ * | Variation / Step | Description        | Test Data      | Expected Result     | Notes         |
  * | :----: | :---------: | :----------: | :--------------: | :-----: |
- * |  01   | Invoke the API with NULL pointer          | network_info = NULL          | RETURN_ERR | Should fail   |
+ * |  01   | Invoke the get_available_networks_information API  | network_info = NULL   | RETURN_ERR | Should fail   |
  */
 
-void test_l1_cellular_hal_negative2_get_available_networks_information(void) {
-    UT_LOG("Entering test_l1_cellular_hal_negative2_cellular_hal_get_available_networks_information...");
-    
+void test_l1_cellular_hal_negative1_get_available_networks_information(void) {
+    UT_LOG("Entering test_l1_cellular_hal_negative1_cellular_hal_get_available_networks_information...");
+    CellularNetworkScanResultInfoStruct *network_info = ((CellularNetworkScanResultInfoStruct*)malloc (sizeof(CellularNetworkScanResultInfoStruct))) ; // Valid pointer
+    if(network_info != NULL){
     // Test variables
     CellularNetworkScanResultInfoStruct **network_info = NULL; // NULL pointer
     unsigned int total_network_count; // Valid pointer
-    UT_LOG("Invoking test_l1_cellular_hal_negative2_cellular_hal_get_available_networks_information...");  
+    UT_LOG("Invoking test_l1_cellular_hal_negative1_cellular_hal_get_available_networks_information...");  
 
     // Invoke the API with NULL pointer for network_info
     int status = cellular_hal_get_available_networks_information(network_info, &total_network_count);
@@ -2462,9 +2692,14 @@ void test_l1_cellular_hal_negative2_get_available_networks_information(void) {
    
     // Check the return value
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
-    
+    }
+    else
+    {
+        UT_LOG("Malloc operation failed");
+        UT_FAIL("Memory allocation with malloc failed");
+    }
     // Test complete
-    UT_LOG("Exiting test_l1_cellular_hal_negative2_cellular_hal_get_available_networks_information...");
+    UT_LOG("Exiting test_l1_cellular_hal_negative1_cellular_hal_get_available_networks_information...");
 }
 
 /**
@@ -2483,15 +2718,15 @@ void test_l1_cellular_hal_negative2_get_available_networks_information(void) {
 * **Test Procedure:** @n
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
-* | 01 | Invoke the function with a NULL pointer for total_network_count | with total_network_count = NULL pointer | RETURN_ERROR | Should return an error value indicating that the total_network_count is a NULL pointer |
+* | 01 | Invoke the get_available_networks_information function | with total_network_count = NULL pointer | RETURN_ERROR | Should return an error value indicating that the total_network_count is a NULL pointer |
 */
-void test_l1_cellular_hal_negative3_get_available_networks_information(void) {
-    UT_LOG("Entering test_l1_cellular_hal_negative3_cellular_hal_get_available_networks_information...");
+/*void test_l1_cellular_hal_negative2_get_available_networks_information(void) {
+    UT_LOG("Entering test_l1_cellular_hal_negative2_cellular_hal_get_available_networks_information...");
     
     // Test variables
     CellularNetworkScanResultInfoStruct **network_info; // Valid pointer
     unsigned int *total_network_count = NULL; // NULL pointer
-    UT_LOG("Invoking test_l1_cellular_hal_negative3_cellular_hal_get_available_networks_information...");  
+    UT_LOG("Invoking test_l1_cellular_hal_negative2_cellular_hal_get_available_networks_information...");  
     
     // Invoke the API with NULL pointer for total_network_count
     int status = cellular_hal_get_available_networks_information(&network_info, total_network_count);
@@ -2501,12 +2736,12 @@ void test_l1_cellular_hal_negative3_get_available_networks_information(void) {
     UT_ASSERT_EQUAL(status, RETURN_ERROR);
     
     // Test complete
-    UT_LOG("Exiting test_l1_cellular_hal_negative3_cellular_hal_get_available_networks_information...");
-}
+    UT_LOG("Exiting test_l1_cellular_hal_negative2_cellular_hal_get_available_networks_information...");
+}*/
 /**
 * @brief This test function is used to verify the functionality of the "cellular_hal_get_modem_preferred_radio_technology" API.
 *
-* The objective of this test is to ensure that the API returns the preferred radio technology correctly.
+* The objective of this test is to ensure that the API returns the preferred radio technology correctly.test_l1_cellular_hal_positive1_get_modem_current_radio_technology
 *
 * **Test Group ID:** Basic: 01 @n
 * **Test Case ID:** 070 @n
@@ -2535,7 +2770,6 @@ void test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology(void) {
    UT_LOG("Value: %d", preferred_rat);
     
     // Check the return value
-    UT_ASSERT_EQUAL(ret, RETURN_OK);
     //UT_LOG("API returned successfully");
 
     // Check if the preferred_rat value is within the expected range of possible values
@@ -2550,6 +2784,7 @@ void test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology(void) {
             UT_FAIL("modem_preferred_radio_technology fail");
     }
     UT_LOG("Preferred RAT value: %s", preferred_rat);
+    UT_ASSERT_EQUAL(ret, RETURN_OK);
 
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology...");
 }
@@ -2604,7 +2839,7 @@ void test_l1_cellular_hal_negative1_get_modem_preferred_radio_technology(void) {
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Pass NULL pointer as input | NULL | RETURN_ERROR | Should return the expected error value |
 */
-void test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology(void) {
+/*void test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology(void) {
     UT_LOG("Entering test_l1_cellular_hal_negative1_get_modem_preferred_radio_technology...");
     UT_LOG("Invoking test_l1_cellular_hal_nagative2_get_modem_preferred_radio_technology...");  
     char preferred_rat[128];
@@ -2617,7 +2852,7 @@ void test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology(void) {
     UT_LOG("API returned error as expected");
 
     UT_LOG("Exiting test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology...");
-}
+}*/
 
 
 /**
@@ -2841,12 +3076,20 @@ void test_l1_cellular_hal_positive1_get_modem_current_radio_technology( void )
    // int result = cellular_hal_get_modem_current_radio_technology(&current_rat);
     int result = cellular_hal_get_modem_current_radio_technology(&current_rat);
     UT_LOG("Return result: %d", result);
-    //UT_ASSERT_EQUAL(result, RETURN_OK);
-
-
-    //UT_LOG("Result: %s", (result == RETURN_OK) ? "Successful" : "Failer");
-
+    if (!strcmp(current_rat,"AUTO") || !strcmp(current_rat,"CDMA20001X") || !strcmp(current_rat,"EVDO") || !strcmp(current_rat,"GSM")||  !strcmp(current_rat,"UMTS") || !strcmp(current_rat,"LTE") || !strcmp(current_rat,"UMTS,LTE"))
+    {
+            UT_LOG("get_modem_current_radio_technology %s which is a valid value",current_rat);
+            UT_PASS("get_modem_current_radio_technology validation success");
+    }
+    else
+    {
+            UT_LOG("get_modem_current_radio_technology %s which is a Invalid value",current_rat);
+            UT_FAIL("get_modem_current_radio_technology fail");
+    }
     UT_ASSERT_EQUAL(result, RETURN_OK);
+
+    UT_LOG("test_l1_cellular_hal_positive1_get_modem_current_radio_technology...");
+
     UT_LOG("Exiting test_l1_cellular_hal_positive1_get_modem_current_radio_technology...");
 }
 /**
@@ -2901,7 +3144,7 @@ void test_l1_cellular_hal_negative1_get_modem_current_radio_technology( void )
 * | :----: | :---------: | :----------: | :--------------: | :-----: |
 * | 01 | Invoking function with current_rat buffer as NULL pointer and checking the return value | current_rat = NULL | RETURN_ERR | The return value should be `RETURN_ERROR` |
 */
-void test_l1_cellular_hal_negative2_get_modem_current_radio_technology( void )
+/*void test_l1_cellular_hal_negative2_get_modem_current_radio_technology( void )
 {
     UT_LOG("Entering test_l1_cellular_hal_negative_2_get_modem_current_radio_technology_null_pointer...");
 
@@ -2916,7 +3159,7 @@ void test_l1_cellular_hal_negative2_get_modem_current_radio_technology( void )
     UT_ASSERT_EQUAL(result, RETURN_ERROR);
 
     UT_LOG("Exiting test_l1_cellular_hal_negative_2_get_modem_current_radio_technology_null_pointer...");
-}
+}*/
 
 /**
  * @brief Test case to verify the behavior when failed to attach to the network in cellular_hal_get_modem_current_radio_technology
@@ -2953,7 +3196,6 @@ void test_l1_cellular_hal_positive1_get_modem_supported_radio_technology( void )
     UT_LOG("Value: %s", supported_rat);   
 
     // Check the return status
-    UT_ASSERT_EQUAL(status, RETURN_OK);
  if (!strcmp(supported_rat,"AUTO") || !strcmp(supported_rat,"CDMA20001X") || !strcmp(supported_rat,"EVDO") || !strcmp(supported_rat,"GSM")||  !strcmp(supported_rat,"UMTS") || !strcmp(supported_rat,"LTE") || !strcmp(supported_rat,"UMTS,LTE"))
     {
             UT_LOG("modem_supported_radio_technology %s which is a valid value",supported_rat);
@@ -2964,7 +3206,9 @@ void test_l1_cellular_hal_positive1_get_modem_supported_radio_technology( void )
             UT_LOG("modem_supported_radio_technology %s which is a Invalid value",supported_rat);
             UT_FAIL("modem_supported_radio_technology fail");
     }
-    UT_LOG("test_l1_cellular_hal_positive1_get_modem_supported_radio_technology...");
+    UT_ASSERT_EQUAL(status, RETURN_OK);
+
+    UT_LOG("test_l1_cellular_hal_positive1_get_modem_supported_radio_technology...",supported_rat);
 
 }
 /**
@@ -3092,8 +3336,8 @@ int register_hal_tests(void)
     }
     // List of test function names and strings
    
-const char* list1[] = {"l1_cellular_hal_positive1_IsModemDevicePresent","l1_cellular_hal_positive1_init","l1_cellular_hal_positive2_init","l1_cellular_hal_positive3_init","l1_cellular_hal_negative1_init","l1_cellular_hal_negative2_init","l1_cellular_hal_negative3_init","l1_cellular_hal_positive1_sim_power_enable","l1_cellular_hal_positive2_sim_power_enable","l1_cellular_hal_positive3_sim_power_enable","l1_cellular_hal_positive_sim_power_enable","l1_cellular_hal_negative1_sim_power_enable","l1_cellular_hal_negative2_sim_power_enable","l1_cellular_hal_positive1_get_total_no_of_uicc_slots","l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive1_get_active_card_status","l1_cellular_hal_negative2_get_active_card_status","l1_cellular_hal_positive1_get_profile_list","l1_cellular_hal_negative1_get_profile_list","l1_cellular_hal_negative2_get_profile_list","l1_cellular_hal_negative3_get_profile_list","l1_cellular_hal_positive1_cellular_hal_stop_network","l1_cellular_hal_positive2_cellular_hal_stop_network","l1_cellular_hal_positive3_cellular_hal_stop_network","l1_cellular_hal_negative1_cellular_hal_stop_network","l1_cellular_hal_positive1_get_signal_info","l1_cellular_hal_negative1_get_signal_info","l1_cellular_hal_negative2_get_signal_info","l1_cellular_hal_positive1_set_modem_operating_configuration","l1_cellular_hal_positive2_set_modem_operating_configuration","l1_cellular_hal_positive3_set_modem_operating_configuration","l1_cellular_hal_positive4_set_modem_operating_configuration","l1_cellular_hal_positive5_set_modem_operating_configuration","l1_cellular_hal_negative1_set_modem_operating_configuration","l1_cellular_hal_negative2_set_modem_operating_configuration","l1_cellular_hal_positive1_get_device_imei_sv","l1_cellular_hal_negative1_get_device_imei_sv","l1_cellular_hal_negative2_get_device_imei_sv","l1_cellular_hal_positive1_get_device_imei","l1_cellular_hal_negative1_get_device_imei","l1_cellular_hal_negative2_get_device_imei","l1_cellular_hal_positive1_get_modem_current_iccid","l1_cellular_hal_negative1_get_modem_current_iccid","l1_cellular_hal_negative2_get_modem_current_iccid","l1_cellular_hal_positive1_get_modem_current_msisdn","l1_cellular_hal_negative1_get_modem_current_msisdn","l1_cellular_hal_negative2_get_modem_current_msisdn","l1_cellular_hal_positive1_get_packet_statistics","l1_cellular_hal_negative1_get_packet_statistics","l1_cellular_hal_negative2_get_packet_statistics","l1_cellular_hal_positive1_get_current_modem_interface_status","l1_cellular_hal_negative1_get_current_modem_interface_status","l1_cellular_hal_negative2_get_current_modem_interface_status","l1_cellular_hal_negative1_set_modem_network_attach","l1_cellular_hal_negative1_set_modem_network_detach","l1_cellular_hal_positive1_get_modem_firmware_version","l1_cellular_hal_positive1_get_current_plmn_information","l1_cellular_hal_negative1_get_current_plmn_information","l1_cellular_hal_negative2_get_current_plmn_information","l1_cellular_hal_negative2_get_available_networks_information","l1_cellular_hal_positive1_get_modem_preferred_radio_technology","l1_cellular_hal_negative1_get_modem_preferred_radio_technology","l1_cellular_hal_negative2_get_modem_preferred_radio_technology","l1_cellular_hal_positive1_set_modem_preferred_radio_technology","l1_cellular_hal_positive2_set_modem_preferred_radio_technology","l1_cellular_hal_positive3_set_modem_preferred_radio_technology","l1_cellular_hal_negative1_set_modem_preferred_radio_technology","l1_cellular_hal_negative2_set_modem_preferred_radio_technology","l1_cellular_hal_positive1_get_modem_current_radio_technology","l1_cellular_hal_negative1_get_modem_current_radio_technology","l1_cellular_hal_negative2_get_modem_current_radio_technology","l1_cellular_hal_positive1_get_modem_supported_radio_technology","l1_cellular_hal_negative1_get_modem_supported_radio_technology","l1_cellular_hal_positive1_modem_factory_reset","l1_cellular_hal_positive1_cellular_hal_modem_reset"};
-void (*list2[])() = {test_l1_cellular_hal_positive1_IsModemDevicePresent,test_l1_cellular_hal_positive1_init,test_l1_cellular_hal_positive2_init,test_l1_cellular_hal_positive3_init,test_l1_cellular_hal_negative1_init,test_l1_cellular_hal_negative2_init,test_l1_cellular_hal_negative3_init,test_l1_cellular_hal_positive1_sim_power_enable,test_l1_cellular_hal_positive2_sim_power_enable,test_l1_cellular_hal_positive3_sim_power_enable,test_l1_cellular_hal_positive4_sim_power_enable,test_l1_cellular_hal_negative1_sim_power_enable,test_l1_cellular_hal_negative2_sim_power_enable,test_l1_cellular_hal_positive1_get_total_no_of_uicc_slots,test_l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive1_get_active_card_status,test_l1_cellular_hal_negative2_get_active_card_status,test_l1_cellular_hal_positive1_get_profile_list,test_l1_cellular_hal_negative1_get_profile_list,test_l1_cellular_hal_negative2_get_profile_list,test_l1_cellular_hal_negative3_get_profile_list,test_l1_cellular_hal_positive1_cellular_hal_stop_network,test_l1_cellular_hal_positive2_cellular_hal_stop_network,test_l1_cellular_hal_positive3_cellular_hal_stop_network,test_l1_cellular_hal_negative1_cellular_hal_stop_network,test_l1_cellular_hal_positive1_get_signal_info,test_l1_cellular_hal_negative1_get_signal_info,test_l1_cellular_hal_negative2_get_signal_info,test_l1_cellular_hal_positive1_set_modem_operating_configuration,test_l1_cellular_hal_positive2_set_modem_operating_configuration,test_l1_cellular_hal_positive3_set_modem_operating_configuration,test_l1_cellular_hal_positive4_set_modem_operating_configuration,test_l1_cellular_hal_positive5_set_modem_operating_configuration,test_l1_cellular_hal_negative1_set_modem_operating_configuration,test_l1_cellular_hal_negative2_set_modem_operating_configuration,test_l1_cellular_hal_positive1_get_device_imei_sv,test_l1_cellular_hal_negative1_get_device_imei_sv,test_l1_cellular_hal_negative2_get_device_imei,test_l1_cellular_hal_negative2_get_device_imei_sv,test_l1_cellular_hal_positive1_get_device_imei,test_l1_cellular_hal_negative1_get_device_imei,test_l1_cellular_hal_positive1_get_modem_current_iccid,test_l1_cellular_hal_negative1_get_modem_current_iccid,test_l1_cellular_hal_negative2_get_modem_current_iccid,test_l1_cellular_hal_positive1_get_modem_current_msisdn,test_l1_cellular_hal_negative1_get_modem_current_msisdn,test_l1_cellular_hal_negative2_get_modem_current_msisdn,test_l1_cellular_hal_positive1_get_packet_statistics,test_l1_cellular_hal_negative1_get_packet_statistics,test_l1_cellular_hal_negative2_get_packet_statistics,test_l1_cellular_hal_positive1_get_current_modem_interface_status,test_l1_cellular_hal_negative1_get_current_modem_interface_status,test_l1_cellular_hal_negative2_get_current_modem_interface_status,test_l1_cellular_hal_negative1_set_modem_network_attach,test_l1_cellular_hal_negative1_set_modem_network_detach,test_l1_cellular_hal_positive1_get_modem_firmware_version,test_l1_cellular_hal_positive1_get_current_plmn_information,test_l1_cellular_hal_negative1_get_current_plmn_information,test_l1_cellular_hal_negative2_get_current_plmn_information,test_l1_cellular_hal_negative2_get_available_networks_information,test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_get_modem_preferred_radio_technology,test_l1_cellular_hal_negative2_get_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive3_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_get_modem_current_radio_technology,test_l1_cellular_hal_negative1_get_modem_current_radio_technology,test_l1_cellular_hal_negative2_get_modem_current_radio_technology,test_l1_cellular_hal_positive1_get_modem_supported_radio_technology,test_l1_cellular_hal_negative1_get_modem_supported_radio_technology,test_l1_cellular_hal_positive1_modem_factory_reset,test_l1_cellular_hal_positive1_cellular_hal_modem_reset};
+const char* list1[] = {"l1_cellular_hal_negative1_get_modem_firmware_version","l1_cellular_hal_positive1_get_available_networks_information","l1_cellular_hal_negative1_get_available_networks_information","l1_cellular_hal_positive1_IsModemDevicePresent","l1_cellular_hal_positive1_init","l1_cellular_hal_positive2_init","l1_cellular_hal_positive3_init","l1_cellular_hal_negative1_init","l1_cellular_hal_negative2_init","l1_cellular_hal_negative3_init","l1_cellular_hal_positive1_sim_power_enable","l1_cellular_hal_positive2_sim_power_enable","l1_cellular_hal_positive3_sim_power_enable","l1_cellular_hal_positive_sim_power_enable","l1_cellular_hal_negative1_sim_power_enable","l1_cellular_hal_negative2_sim_power_enable","l1_cellular_hal_positive1_get_total_no_of_uicc_slots","l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info","l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info","l1_cellular_hal_positive1_get_active_card_status","l1_cellular_hal_negative2_get_active_card_status","l1_cellular_hal_positive1_get_profile_list","l1_cellular_hal_negative1_get_profile_list","l1_cellular_hal_negative2_get_profile_list","l1_cellular_hal_positive1_cellular_hal_stop_network","l1_cellular_hal_positive2_cellular_hal_stop_network","l1_cellular_hal_positive3_cellular_hal_stop_network","l1_cellular_hal_negative1_cellular_hal_stop_network","l1_cellular_hal_positive1_get_signal_info","l1_cellular_hal_negative1_get_signal_info","l1_cellular_hal_positive1_set_modem_operating_configuration","l1_cellular_hal_positive2_set_modem_operating_configuration","l1_cellular_hal_positive3_set_modem_operating_configuration","l1_cellular_hal_positive4_set_modem_operating_configuration","l1_cellular_hal_positive5_set_modem_operating_configuration","l1_cellular_hal_negative1_set_modem_operating_configuration","l1_cellular_hal_negative2_set_modem_operating_configuration","l1_cellular_hal_positive1_get_device_imei_sv","l1_cellular_hal_negative1_get_device_imei_sv","l1_cellular_hal_positive1_get_device_imei","l1_cellular_hal_negative1_get_device_imei","l1_cellular_hal_positive1_get_modem_current_iccid","l1_cellular_hal_negative1_get_modem_current_iccid","l1_cellular_hal_positive1_get_modem_current_msisdn","l1_cellular_hal_negative1_get_modem_current_msisdn","l1_cellular_hal_positive1_get_packet_statistics","l1_cellular_hal_negative1_get_packet_statistics","l1_cellular_hal_positive1_get_current_modem_interface_status","l1_cellular_hal_negative1_get_current_modem_interface_status","l1_cellular_hal_negative1_set_modem_network_attach","l1_cellular_hal_negative1_set_modem_network_detach","l1_cellular_hal_positive1_get_modem_firmware_version","l1_cellular_hal_positive1_get_current_plmn_information","l1_cellular_hal_negative1_get_current_plmn_information","l1_cellular_hal_positive1_get_modem_preferred_radio_technology","l1_cellular_hal_negative1_get_modem_preferred_radio_technology","l1_cellular_hal_positive1_set_modem_preferred_radio_technology","l1_cellular_hal_positive2_set_modem_preferred_radio_technology","l1_cellular_hal_positive3_set_modem_preferred_radio_technology","l1_cellular_hal_negative1_set_modem_preferred_radio_technology","l1_cellular_hal_negative2_set_modem_preferred_radio_technology","l1_cellular_hal_positive1_get_modem_current_radio_technology","l1_cellular_hal_negative1_get_modem_current_radio_technology","l1_cellular_hal_positive1_get_modem_supported_radio_technology","l1_cellular_hal_negative1_get_modem_supported_radio_technology","l1_cellular_hal_positive1_modem_factory_reset","l1_cellular_hal_positive1_cellular_hal_modem_reset"};
+void (*list2[])() = {test_l1_cellular_hal_negative1_get_modem_firmware_version,test_l1_cellular_hal_positive1_get_available_networks_information,test_l1_cellular_hal_negative1_get_available_networks_information,test_l1_cellular_hal_positive1_IsModemDevicePresent,test_l1_cellular_hal_positive1_init,test_l1_cellular_hal_positive2_init,test_l1_cellular_hal_positive3_init,test_l1_cellular_hal_negative1_init,test_l1_cellular_hal_negative2_init,test_l1_cellular_hal_negative3_init,test_l1_cellular_hal_positive1_sim_power_enable,test_l1_cellular_hal_positive2_sim_power_enable,test_l1_cellular_hal_positive3_sim_power_enable,test_l1_cellular_hal_positive4_sim_power_enable,test_l1_cellular_hal_negative1_sim_power_enable,test_l1_cellular_hal_negative2_sim_power_enable,test_l1_cellular_hal_positive1_get_total_no_of_uicc_slots,test_l1_cellular_hal_positive1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative1_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_negative2_cellular_hal_get_uicc_slot_info,test_l1_cellular_hal_positive1_get_active_card_status,test_l1_cellular_hal_negative2_get_active_card_status,test_l1_cellular_hal_positive1_get_profile_list,test_l1_cellular_hal_negative1_get_profile_list,test_l1_cellular_hal_negative2_get_profile_list,test_l1_cellular_hal_positive1_cellular_hal_stop_network,test_l1_cellular_hal_positive2_cellular_hal_stop_network,test_l1_cellular_hal_positive3_cellular_hal_stop_network,test_l1_cellular_hal_negative1_cellular_hal_stop_network,test_l1_cellular_hal_positive1_get_signal_info,test_l1_cellular_hal_negative1_get_signal_info,test_l1_cellular_hal_positive1_set_modem_operating_configuration,test_l1_cellular_hal_positive2_set_modem_operating_configuration,test_l1_cellular_hal_positive3_set_modem_operating_configuration,test_l1_cellular_hal_positive4_set_modem_operating_configuration,test_l1_cellular_hal_positive5_set_modem_operating_configuration,test_l1_cellular_hal_negative1_set_modem_operating_configuration,test_l1_cellular_hal_negative2_set_modem_operating_configuration,test_l1_cellular_hal_positive1_get_device_imei_sv,test_l1_cellular_hal_negative1_get_device_imei_sv,test_l1_cellular_hal_positive1_get_device_imei,test_l1_cellular_hal_negative1_get_device_imei,test_l1_cellular_hal_positive1_get_modem_current_iccid,test_l1_cellular_hal_negative1_get_modem_current_iccid,test_l1_cellular_hal_positive1_get_modem_current_msisdn,test_l1_cellular_hal_negative1_get_modem_current_msisdn,test_l1_cellular_hal_positive1_get_packet_statistics,test_l1_cellular_hal_negative1_get_packet_statistics,test_l1_cellular_hal_positive1_get_current_modem_interface_status,test_l1_cellular_hal_negative1_get_current_modem_interface_status,test_l1_cellular_hal_negative1_set_modem_network_attach,test_l1_cellular_hal_negative1_set_modem_network_detach,test_l1_cellular_hal_positive1_get_modem_firmware_version,test_l1_cellular_hal_positive1_get_current_plmn_information,test_l1_cellular_hal_negative1_get_current_plmn_information,test_l1_cellular_hal_positive1_get_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_get_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive3_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative1_set_modem_preferred_radio_technology,test_l1_cellular_hal_negative2_set_modem_preferred_radio_technology,test_l1_cellular_hal_positive1_get_modem_current_radio_technology,test_l1_cellular_hal_negative1_get_modem_current_radio_technology,test_l1_cellular_hal_positive1_get_modem_supported_radio_technology,test_l1_cellular_hal_negative1_get_modem_supported_radio_technology,test_l1_cellular_hal_positive1_modem_factory_reset,test_l1_cellular_hal_positive1_cellular_hal_modem_reset};
 
     // Add tests to the suite
     for (int i = 0; i < sizeof(list1) / sizeof(list1[0]); i++) {

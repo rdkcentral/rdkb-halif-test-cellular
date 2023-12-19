@@ -16,14 +16,24 @@
 * limitations under the License.
 */
 
-/* L1 Testing Functions */
 extern int test_cellular_hal_l1_register(void);
+extern int test_cellular_hal_l2_register(void);
 
 int register_hal_l1_tests( void )
 {
     int registerFailed=0;
 
     registerFailed |= test_cellular_hal_l1_register();
+
+    return registerFailed;
+}
+
+
+int register_hal_l2_tests( void )
+{
+    int registerFailed=0;
+
+    registerFailed |= test_cellular_hal_l2_register();
 
     return registerFailed;
 }

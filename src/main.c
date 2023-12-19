@@ -20,6 +20,7 @@
 #include <ut_log.h>
 
 extern int register_hal_l1_tests( void );
+extern int register_hal_l2_tests( void );
 
 int main(int argc, char** argv)
 {
@@ -37,6 +38,18 @@ int main(int argc, char** argv)
         printf("register_hal_l1_tests() returned failure");
         return 1;
     }
+
+    registerReturn = register_hal_l2_tests();
+    if (registerReturn == 0)
+    {
+        printf("register_hal_l2_tests() returned success");
+    }
+    else
+    {
+        printf("register_hal_l2_tests() returned failure");
+        return 1;
+    }
+    /* 
     /* Begin test executions */
     UT_run_tests();
     return 0;

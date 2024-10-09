@@ -1,0 +1,4 @@
+# Temporary configuration file defined for testing purposes only.
+cellular:
+  config:
+    slot_id:

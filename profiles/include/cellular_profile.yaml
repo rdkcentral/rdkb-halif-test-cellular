@@ -1,0 +1,22 @@
+# Temporary configuration file defined for testing purposes only.
+# All the values stated are example or reference values which are vendor-specific.
+# Please refer hal spec and fill the enum values corresponding to the specific device configuration[ProfileType,PDPType,PDPAuthentication and PDPNetworkConfig]
+cellular:
+  config:
+    slot_id: 1
+    profile:
+      ProfileID: 101
+      ProfileType: "CELLULAR_PROFILE_TYPE_3GPP"
+      PDPContextNumber: 1
+      PDPType: "CELLULAR_PDP_TYPE_IPV4"
+      PDPAuthentication: "CELLULAR_PDP_AUTHENTICATION_NONE"
+      PDPNetworkConfig: "CELLULAR_PDP_NETWORK_CONFIG_NAS"
+      ProfileName: "Default Profile"
+      APN: "internet"
+      Username: "user"
+      Password: "password"
+      Proxy: "192.168.0.1"
+      ProxyPort: 8080
+      bIsNoRoaming: 1
+      bIsAPNDisabled: 0
+      bIsThisDefaultProfile: 1
